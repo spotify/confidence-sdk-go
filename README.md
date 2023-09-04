@@ -13,10 +13,10 @@ Until the module is available in a public repository, you can add it to your pro
 adding something like this to your `go.mod`. 
 
 ```
-replace github.com/spotify/openfeature-go/pkg/provider => ../openfeature-go/pkg/provider
+replace github.com/spotify/confidence-openfeature-provider-go/pkg/provider => ../openfeature-go/pkg/provider
 
 require (
-	github.com/spotify/openfeature-go/pkg/provider v0.0.1
+	github.com/spotify/confidence-openfeature-provider-go/pkg/provider v0.0.1
 	github.com/open-feature/go-sdk v1.1.0
 )
 ```
@@ -39,7 +39,7 @@ The flag's schema is validated against the requested data type, and if it doesn'
 ```go
 import (
     "github.com/open-feature/go-sdk/pkg/openfeature"
-    confidence "github.com/spotify/openfeature-go/pkg/provider"
+    confidence "github.com/spotify/confidence-openfeature-provider-go/pkg/provider"
 )
 
 provider, err := confidence.NewFlagProvider(confidence.APIConfig{APIKey: "apiKey", Region: confidence.APIRegionEU})

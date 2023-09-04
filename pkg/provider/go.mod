@@ -1,4 +1,4 @@
-module github.com/spotify/openfeature-go/pkg/provider
+module github.com/spotify/confidence-openfeature-provider-go/pkg/provider
 
 go 1.19
 
