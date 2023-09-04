@@ -1,4 +1,4 @@
-# Confidence OpenFeature Go Flag Provider
+# Confidence OpenFeature Go Provider
 
 This repo contains the OpenFeature Go flag provider for Confidence.
 
@@ -8,16 +8,10 @@ Before starting to use the provider, it can be helpful to read through the gener
 and get familiar with the concepts. 
 
 ## Adding the dependency
-
-Until the module is available in a public repository, you can add it to your project by 
-adding something like this to your `go.mod`. 
-
 ```
-replace github.com/spotify/confidence-openfeature-provider-go/pkg/provider => ../openfeature-go/pkg/provider
-
 require (
 	github.com/spotify/confidence-openfeature-provider-go/pkg/provider v0.0.1
-	github.com/open-feature/go-sdk v1.1.0
+	github.com/open-feature/go-sdk v1.7.0
 )
 ```
 
