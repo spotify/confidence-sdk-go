@@ -14,32 +14,6 @@ type httpResolveClient struct {
 	Config APIConfig
 }
 
-func (client httpResolveClient) sendApplyRequest(ctx context.Context,
-	request applyFlagRequest) error {
-	jsonRequest, err := json.Marshal(request)
-	if err != nil {
-		return fmt.Errorf("error when serializing request to the resolver service: %w", err)
-	}
-
-	payload := bytes.NewBuffer(jsonRequest)
-	req, err := http.NewRequestWithContext(ctx,
-		http.MethodPost, fmt.Sprintf("%s/flags:apply", client.Config.Region.apiURL()), payload)
-	if err != nil {
-		return err
-	}
-
-	resp, err := client.Client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error when calling the resolver service: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("got non-200 response from the resolver service: %s", resp.Status)
-	}
-	return nil
-}
-
 func parseErrorMessage(body io.ReadCloser) string {
 	var resolveError resolveErrorMessage
 	decoder := json.NewDecoder(body)

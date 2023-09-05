@@ -3,7 +3,6 @@ package provider
 import (
 	"context"
 	"errors"
-	"time"
 )
 
 type APIRegion int64
@@ -44,7 +43,6 @@ func (c APIConfig) validate() error {
 
 type resolveClient interface {
 	sendResolveRequest(ctx context.Context, request resolveRequest) (resolveResponse, error)
-	sendApplyRequest(ctx context.Context, request applyFlagRequest) error
 }
 
 var errFlagNotFound = errors.New("flag not found")
@@ -59,18 +57,6 @@ type resolveRequest struct {
 type resolveResponse struct {
 	ResolvedFlags []resolvedFlag `json:"resolvedFlags"`
 	ResolveToken  string         `json:"resolveToken"`
-}
-
-type applyFlagRequest struct {
-	AppliedFlags []appliedFlag `json:"flags"`
-	ClientSecret string        `json:"clientSecret"`
-	ResolveToken string        `json:"resolveToken"`
-	SendTime     time.Time     `json:"sendTime"`
-}
-
-type appliedFlag struct {
-	Flag      string    `json:"flag"`
-	ApplyTime time.Time `json:"applyTime"`
 }
 
 type resolveErrorMessage struct {

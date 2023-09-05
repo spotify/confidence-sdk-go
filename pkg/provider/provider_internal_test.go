@@ -15,17 +15,11 @@ import (
 type MockResolveClient struct {
 	MockedResponse resolveResponse
 	MockedError    error
-	ApplyRequests  *[]applyFlagRequest
 }
 
 func (r MockResolveClient) sendResolveRequest(_ context.Context,
 	_ resolveRequest) (resolveResponse, error) {
 	return r.MockedResponse, r.MockedError
-}
-
-func (r MockResolveClient) sendApplyRequest(_ context.Context, request applyFlagRequest) error {
-	*r.ApplyRequests = append(*r.ApplyRequests, request)
-	return nil
 }
 
 func TestResolveBoolValue(t *testing.T) {
