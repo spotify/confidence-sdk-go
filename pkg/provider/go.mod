@@ -1,6 +1,6 @@
 module github.com/spotify/confidence-openfeature-provider-go/pkg/provider
 
-go 1.19
+go 1.20
 
 require (
 	github.com/open-feature/go-sdk v1.1.0
