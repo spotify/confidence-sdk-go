@@ -53,3 +53,8 @@ attributes["user_id"] = "dennis"
 boolValue, error := client.BooleanValue(context.Background(), "test-flag.boolean-key", false, 
 	openfeature.NewEvaluationContext("", attributes))
 ```
+## Demo app
+
+To run the demo app, replace the `CLIENT_SECRET` with client secret setup in the 
+[Confidence](https://confidence.spotify.com/) console, the flags with existing flags and execute 
+the app with `go run pkg/demo/GoDemoApp.go`.
