@@ -10,7 +10,7 @@ and get familiar with the concepts.
 ## Adding the dependency
 ```
 require (
-	github.com/spotify/confidence-openfeature-provider-go/pkg/provider v0.0.1
+	github.com/spotify/confidence-openfeature-provider-go v0.1.3
 	github.com/open-feature/go-sdk v1.7.0
 )
 ```
