@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/spotify/confidence-openfeature-provider-go/compare/v0.1.1...v0.1.2) (2023-09-08)
+
+
+### 🧹 Chore
+
+* update module names for the go.mod files, move out demo from the pkg ([#22](https://github.com/spotify/confidence-openfeature-provider-go/issues/22)) ([895b09f](https://github.com/spotify/confidence-openfeature-provider-go/commit/895b09f87fbf286aac9570bd1cfb6eca06abc028))
+
 ## [0.1.1](https://github.com/spotify/confidence-openfeature-provider-go/compare/v0.1.0...v0.1.1) (2023-09-08)
 
 
