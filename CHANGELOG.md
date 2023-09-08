@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.4](https://github.com/spotify/confidence-openfeature-provider-go/compare/v0.1.3...v0.1.4) (2023-09-08)
+
+
+### 🧹 Chore
+
+* bring back demo now that we have 0.1.3 released ([#26](https://github.com/spotify/confidence-openfeature-provider-go/issues/26)) ([ffdf177](https://github.com/spotify/confidence-openfeature-provider-go/commit/ffdf1778acd4d5f1f0c469516ef51c77f293078b))
+* remove unused dep to uuid ([#28](https://github.com/spotify/confidence-openfeature-provider-go/issues/28)) ([39008d5](https://github.com/spotify/confidence-openfeature-provider-go/commit/39008d58cae05ad78fb827a5117b1f4a3814d1b6))
+* update readme ([#29](https://github.com/spotify/confidence-openfeature-provider-go/issues/29)) ([b1cf5a7](https://github.com/spotify/confidence-openfeature-provider-go/commit/b1cf5a7cf3f6fabecfc2bdd896959fb09a5762c0))
+
 ## [0.1.3](https://github.com/spotify/confidence-openfeature-provider-go/compare/v0.1.2...v0.1.3) (2023-09-08)
 
 
