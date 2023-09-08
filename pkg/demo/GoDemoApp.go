@@ -10,7 +10,7 @@ import (
 
 func main() {
 	clientSecret := "CLIENT_SECRET"
-	fmt.Println("Fetching the flags...")
+	fmt.Println("Fetching the flags..")
 
 	provider, err := confidence.NewFlagProvider(confidence.APIConfig{APIKey: clientSecret, Region: confidence.APIRegionEU})
 
