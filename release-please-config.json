@@ -1,7 +1,7 @@
 {
     "bootstrap-sha": "1071027081acd49a38f352ee650bdb85cfa30132",
     "packages": {
-      "pkg/provider": {
+      ".": {
         "release-type": "go",
         "prerelease": false,
         "bump-minor-pre-major": true,
