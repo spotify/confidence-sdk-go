@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/spotify/confidence-openfeature-provider-go/compare/v0.1.2...v0.1.3) (2023-09-08)
+
+
+### 🧹 Chore
+
+* Make the go.mod file root level ([#24](https://github.com/spotify/confidence-openfeature-provider-go/issues/24)) ([242acf0](https://github.com/spotify/confidence-openfeature-provider-go/commit/242acf05831c8a7176e4c1ad381a0da51374366e))
+
 ## [0.1.2](https://github.com/spotify/confidence-openfeature-provider-go/compare/v0.1.1...v0.1.2) (2023-09-08)
 
 
