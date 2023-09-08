@@ -3,7 +3,6 @@ module github.com/spotify/confidence-openfeature-provider-go
 go 1.19
 
 require (
-	github.com/google/uuid v1.3.1
 	github.com/open-feature/go-sdk v1.7.0
 	github.com/stretchr/testify v1.8.4
 )
