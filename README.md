@@ -57,4 +57,4 @@ boolValue, error := client.BooleanValue(context.Background(), "test-flag.boolean
 
 To run the demo app, replace the `CLIENT_SECRET` with client secret setup in the 
 [Confidence](https://confidence.spotify.com/) console, the flags with existing flags and execute 
-the app with `go run pkg/demo/GoDemoApp.go`.
+the app with `cd demo && go run GoDemoApp.go`.
