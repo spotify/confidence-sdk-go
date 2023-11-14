@@ -52,6 +52,12 @@ type resolveRequest struct {
 	Apply             bool                   `json:"apply"`
 	EvaluationContext map[string]interface{} `json:"evaluation_context"`
 	Flags             []string               `json:"flags"`
+	Sdk               sdk                    `json:"sdk"`
+}
+
+type sdk struct {
+	Id         string    `json:"id"`
+	Version    string    `json:"version"`
 }
 
 type resolveResponse struct {
