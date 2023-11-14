@@ -15,6 +15,11 @@ type FlagProvider struct {
 	ResolveClient resolveClient
 }
 
+var (
+    SDK_ID = "SDK_ID_GO_PROVIDER"
+    SDK_VERSION = ""
+)
+
 func NewFlagProvider(config APIConfig) (*FlagProvider, error) {
 	validationError := config.validate()
 	if validationError != nil {
@@ -64,7 +69,8 @@ func (e FlagProvider) resolveFlag(ctx context.Context, flag string, defaultValue
 	requestFlagName := fmt.Sprintf("flags/%s", flagName)
 	resp, err := e.ResolveClient.sendResolveRequest(ctx,
 		resolveRequest{ClientSecret: e.Config.APIKey,
-			Flags: []string{requestFlagName}, Apply: true, EvaluationContext: evalCtx})
+			Flags: []string{requestFlagName}, Apply: true, EvaluationContext: evalCtx,
+			SdkId: SDK_ID, SdkVersion: SDK_VERSION})
 
 	if err != nil {
 		return processResolveError(err, defaultValue)
