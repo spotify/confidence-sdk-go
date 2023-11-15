@@ -12,10 +12,15 @@ and get familiar with the concepts.
 ```
 require (
 	github.com/spotify/confidence-openfeature-provider-go v0.1.4
-	github.com/open-feature/go-sdk v1.7.0
 )
 ```
 <!---x-release-please-end-->
+It's also important to add the underlying OpenFeature SDK dependency:
+```
+require (
+	github.com/open-feature/go-sdk v1.7.0
+)
+```
 
 ### Creating and using the flag provider
 
