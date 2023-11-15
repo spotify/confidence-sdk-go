@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.1.5](https://github.com/spotify/confidence-openfeature-provider-go/compare/v0.1.4...v0.1.5) (2023-11-15)
+
+
+### ✨ New Features
+
+* Add SDK id and version to requests ([#33](https://github.com/spotify/confidence-openfeature-provider-go/issues/33)) ([b63d8f7](https://github.com/spotify/confidence-openfeature-provider-go/commit/b63d8f7c34efe77871a6f9d1f110513bb1d2b350))
+
+
+### 🧹 Chore
+
+* Bring back demo2 ([#30](https://github.com/spotify/confidence-openfeature-provider-go/issues/30)) ([6f0451d](https://github.com/spotify/confidence-openfeature-provider-go/commit/6f0451d2b4649ca315160eddf8d6f8ee4a792c53))
+
+
+### 📚 Documentation
+
+* Fix release please setup in README ([#34](https://github.com/spotify/confidence-openfeature-provider-go/issues/34)) ([f8f08c9](https://github.com/spotify/confidence-openfeature-provider-go/commit/f8f08c948f06cf0d12af04af10b77aae2c714c65))
+
 ## [0.1.4](https://github.com/spotify/confidence-openfeature-provider-go/compare/v0.1.3...v0.1.4) (2023-09-08)
 
 

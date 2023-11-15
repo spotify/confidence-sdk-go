@@ -11,7 +11,7 @@ and get familiar with the concepts.
 <!---x-release-please-start-version-->
 ```
 require (
-	github.com/spotify/confidence-openfeature-provider-go v0.1.4
+	github.com/spotify/confidence-openfeature-provider-go v0.1.5
 )
 ```
 <!---x-release-please-end-->
