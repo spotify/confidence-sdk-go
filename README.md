@@ -8,12 +8,14 @@ Before starting to use the provider, it can be helpful to read through the gener
 and get familiar with the concepts. 
 
 ## Adding the dependency
+<!---x-release-please-start-version-->
 ```
 require (
 	github.com/spotify/confidence-openfeature-provider-go v0.1.4
 	github.com/open-feature/go-sdk v1.7.0
 )
 ```
+<!---x-release-please-end-->
 
 ### Creating and using the flag provider
 

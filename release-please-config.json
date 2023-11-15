@@ -6,7 +6,10 @@
         "prerelease": false,
         "bump-minor-pre-major": true,
         "bump-patch-for-minor-pre-major": true,
-        "extra-files": ["README.md"],
+        "extra-files": [
+          "README.md",
+          "pkg/provider/provider.go"
+        ],
         "changelog-sections": [
           {
             "type": "fix",
