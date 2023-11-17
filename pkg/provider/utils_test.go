@@ -162,15 +162,21 @@ func TestProcessResolveError(t *testing.T) {
 		res := processResolveError(errFlagNotFound, defaultValue)
 		assert.Equal(t, defaultValue, res.Value)
 		assert.IsType(t, openfeature.ResolutionError{}, res.ProviderResolutionDetail.ResolutionError)
-		assert.Equal(t, openfeature.ErrorReason, res.ProviderResolutionDetail.Reason)
+
+		resDetails := res.ProviderResolutionDetail.ResolutionDetail()
+		assert.Equal(t, openfeature.FlagNotFoundCode, resDetails.ErrorCode)
+		assert.Equal(t, openfeature.ErrorReason, resDetails.Reason)
 	})
 
 	t.Run("GeneralError", func(t *testing.T) {
-		err := errors.New("different error")
+		err := errors.New("unknown error")
 		res := processResolveError(err, defaultValue)
 		assert.Equal(t, defaultValue, res.Value)
 		assert.IsType(t, openfeature.ResolutionError{}, res.ProviderResolutionDetail.ResolutionError)
-		assert.Equal(t, openfeature.ErrorReason, res.ProviderResolutionDetail.Reason)
+
+		resDetails := res.ProviderResolutionDetail.ResolutionDetail()
+		assert.Equal(t, openfeature.GeneralCode, resDetails.ErrorCode)
+		assert.Equal(t, openfeature.ErrorReason, resDetails.Reason)
 	})
 }
 
