@@ -15,6 +15,7 @@ func splitFlagString(flag string) (string, string) {
 	if len(splittedFlag) == 2 {
 		return splittedFlag[0], splittedFlag[1]
 	}
+
 	return splittedFlag[0], ""
 }
 
@@ -24,7 +25,6 @@ func extractPropertyValue(path string, values map[string]interface{}) (interface
 	}
 
 	firstPartAndRest := strings.SplitN(path, ".", 2)
-
 	if len(firstPartAndRest) == 1 {
 		value := values[firstPartAndRest[0]]
 		return value, nil
@@ -34,6 +34,7 @@ func extractPropertyValue(path string, values map[string]interface{}) (interface
 	if ok {
 		return extractPropertyValue(firstPartAndRest[1], childMap)
 	}
+
 	return false, fmt.Errorf("unable to find property in path %s", path)
 }
 
@@ -43,10 +44,8 @@ func getTypeForPath(schema map[string]interface{}, path string) (reflect.Kind, e
 	}
 
 	firstPartAndRest := strings.SplitN(path, ".", 2)
-
 	if len(firstPartAndRest) == 1 {
 		value, ok := schema[firstPartAndRest[0]].(map[string]interface{})
-
 		if !ok {
 			return 0, fmt.Errorf("schema was not in the expected format")
 		}
@@ -76,6 +75,7 @@ func getTypeForPath(schema map[string]interface{}, path string) (reflect.Kind, e
 		structSchema, _ := structMap.(map[string]interface{})["schema"].(map[string]interface{})
 		return getTypeForPath(structSchema, firstPartAndRest[1])
 	}
+
 	return 0, fmt.Errorf("unable to find property in schema %s", path)
 }
 
@@ -106,7 +106,6 @@ func processResolvedFlag(resolvedFlag resolvedFlag, defaultValue interface{},
 	}
 
 	actualKind, schemaErr := getTypeForPath(resolvedFlag.FlagSchema.Schema, propertyPath)
-
 	if schemaErr != nil || actualKind != expectedKind {
 		return openfeature.InterfaceResolutionDetail{
 			Value: defaultValue,
@@ -123,7 +122,6 @@ func processResolvedFlag(resolvedFlag resolvedFlag, defaultValue interface{},
 	}
 
 	extractedValue, extractValueError := extractPropertyValue(propertyPath, updatedMap)
-
 	if extractValueError != nil {
 		return typeMismatchError(defaultValue)
 	}
@@ -140,46 +138,42 @@ func replaceNumbers(basePath string, input map[string]interface{},
 	updatedMap := make(map[string]interface{})
 	for key, value := range input {
 		kind, typeErr := getTypeForPath(schema, fmt.Sprintf("%s%s", basePath, key))
-
 		if typeErr != nil {
 			return updatedMap, fmt.Errorf("unable to get type for path %w", typeErr)
 		}
 
 		switch kind {
 		case reflect.Float64:
-			{
-				floatValue, err := value.(json.Number).Float64()
-				if err != nil {
-					return updatedMap, fmt.Errorf("unable to convert to float")
-				}
-				updatedMap[key] = floatValue
+			floatValue, err := value.(json.Number).Float64()
+			if err != nil {
+				return updatedMap, fmt.Errorf("unable to convert to float")
 			}
+
+			updatedMap[key] = floatValue
 		case reflect.Int64:
-			{
-				intValue, err := value.(json.Number).Int64()
-				if err != nil {
-					return updatedMap, fmt.Errorf("unable to convert to int")
-				}
-				updatedMap[key] = intValue
+			intValue, err := value.(json.Number).Int64()
+			if err != nil {
+				return updatedMap, fmt.Errorf("unable to convert to int")
 			}
+
+			updatedMap[key] = intValue
 		case reflect.Map:
-			{
-				asMap, ok := value.(map[string]interface{})
-				if !ok {
-					return updatedMap, fmt.Errorf("unable to convert map")
-				}
-				childMap, err := replaceNumbers(fmt.Sprintf("%s.", key), asMap, schema)
-				if err != nil {
-					return updatedMap, fmt.Errorf("unable to convert map")
-				}
-				updatedMap[key] = childMap
+			asMap, ok := value.(map[string]interface{})
+			if !ok {
+				return updatedMap, fmt.Errorf("unable to convert map")
 			}
+
+			childMap, err := replaceNumbers(fmt.Sprintf("%s.", key), asMap, schema)
+			if err != nil {
+				return updatedMap, fmt.Errorf("unable to convert map")
+			}
+
+			updatedMap[key] = childMap
 		default:
-			{
-				updatedMap[key] = value
-			}
+			updatedMap[key] = value
 		}
 	}
+
 	return updatedMap, nil
 }
 
@@ -202,6 +196,7 @@ func toBoolResolutionDetail(res openfeature.InterfaceResolutionDetail,
 				ProviderResolutionDetail: res.ProviderResolutionDetail,
 			}
 		}
+
 		return openfeature.BoolResolutionDetail{
 			Value: defaultValue,
 			ProviderResolutionDetail: openfeature.ProviderResolutionDetail{
@@ -210,6 +205,7 @@ func toBoolResolutionDetail(res openfeature.InterfaceResolutionDetail,
 			},
 		}
 	}
+
 	return openfeature.BoolResolutionDetail{
 		Value:                    defaultValue,
 		ProviderResolutionDetail: res.ProviderResolutionDetail,
@@ -226,6 +222,7 @@ func toStringResolutionDetail(res openfeature.InterfaceResolutionDetail,
 				ProviderResolutionDetail: res.ProviderResolutionDetail,
 			}
 		}
+
 		return openfeature.StringResolutionDetail{
 			Value: defaultValue,
 			ProviderResolutionDetail: openfeature.ProviderResolutionDetail{
@@ -234,6 +231,7 @@ func toStringResolutionDetail(res openfeature.InterfaceResolutionDetail,
 			},
 		}
 	}
+
 	return openfeature.StringResolutionDetail{
 		Value:                    defaultValue,
 		ProviderResolutionDetail: res.ProviderResolutionDetail,
@@ -250,6 +248,7 @@ func toFloatResolutionDetail(res openfeature.InterfaceResolutionDetail,
 				ProviderResolutionDetail: res.ProviderResolutionDetail,
 			}
 		}
+
 		return openfeature.FloatResolutionDetail{
 			Value: defaultValue,
 			ProviderResolutionDetail: openfeature.ProviderResolutionDetail{
@@ -258,6 +257,7 @@ func toFloatResolutionDetail(res openfeature.InterfaceResolutionDetail,
 			},
 		}
 	}
+
 	return openfeature.FloatResolutionDetail{
 		Value:                    defaultValue,
 		ProviderResolutionDetail: res.ProviderResolutionDetail,
@@ -274,6 +274,7 @@ func toIntResolutionDetail(res openfeature.InterfaceResolutionDetail,
 				ProviderResolutionDetail: res.ProviderResolutionDetail,
 			}
 		}
+
 		return openfeature.IntResolutionDetail{
 			Value: defaultValue,
 			ProviderResolutionDetail: openfeature.ProviderResolutionDetail{
@@ -282,6 +283,7 @@ func toIntResolutionDetail(res openfeature.InterfaceResolutionDetail,
 			},
 		}
 	}
+
 	return openfeature.IntResolutionDetail{
 		Value:                    defaultValue,
 		ProviderResolutionDetail: res.ProviderResolutionDetail,
