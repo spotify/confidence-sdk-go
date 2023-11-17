@@ -98,6 +98,18 @@ func TestResolveNestedValue(t *testing.T) {
 	assert.Equal(t, false, evalDetails.Value)
 }
 
+func TestResolveDoubleNestedValue(t *testing.T) {
+	client := client(templateResponse(), nil)
+	attributes := make(map[string]interface{})
+
+	evalDetails, _ := client.BooleanValueDetails(
+		context.Background(), "test-flag.struct-key.nested-struct-key.nested-boolean-key", true, openfeature.NewEvaluationContext(
+			"dennis",
+			attributes))
+
+	assert.Equal(t, false, evalDetails.Value)
+}
+
 func TestResolveWholeFlagAsObject(t *testing.T) {
 	client := client(templateResponse(), nil)
 	attributes := make(map[string]interface{})
@@ -199,7 +211,10 @@ func templateResponseWithFlagName(flagName string) resolveResponse {
     "boolean-key": false,
     "string-key": "treatment-struct",
     "double-key": 123.23,
-    "integer-key": 23
+    "integer-key": 23,
+	"nested-struct-key": {
+		"nested-boolean-key": false
+	}
    },
    "boolean-key": true,
    "string-key": "treatment",
@@ -222,7 +237,16 @@ func templateResponseWithFlagName(flagName string) resolveResponse {
        },
        "integer-key": {
         "intSchema": {}
-       }
+       },
+	   "nested-struct-key": {
+		"structSchema": {
+			"schema": {
+				"nested-boolean-key": {
+					"boolSchema": {}
+				}
+			}
+		}
+	   }
       }
      }
     },

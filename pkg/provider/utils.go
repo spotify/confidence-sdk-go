@@ -163,7 +163,7 @@ func replaceNumbers(basePath string, input map[string]interface{},
 				return updatedMap, fmt.Errorf("unable to convert map")
 			}
 
-			childMap, err := replaceNumbers(fmt.Sprintf("%s.", key), asMap, schema)
+			childMap, err := replaceNumbers(fmt.Sprintf("%s%s.", basePath, key), asMap, schema)
 			if err != nil {
 				return updatedMap, fmt.Errorf("unable to convert map")
 			}
