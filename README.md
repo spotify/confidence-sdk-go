@@ -1,6 +1,6 @@
 # Confidence OpenFeature Go Provider
 
-This repo contains the OpenFeature Go flag provider for Confidence.
+This repo contains the OpenFeature Go flag provider for [Confidence](https://confidence.spotify.com/).
 
 ## OpenFeature
 
