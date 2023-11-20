@@ -28,7 +28,7 @@ func TestResolveBoolValue(t *testing.T) {
 
 	evalDetails, _ := client.BooleanValueDetails(
 		context.Background(), "test-flag.boolean-key", false, openfeature.NewEvaluationContext(
-			"dennis",
+			"user1",
 			attributes))
 
 	assert.Equal(t, true, evalDetails.Value)
@@ -43,7 +43,7 @@ func TestResolveIntValue(t *testing.T) {
 
 	evalDetails, _ := client.IntValueDetails(
 		context.Background(), "test-flag.integer-key", 99, openfeature.NewEvaluationContext(
-			"dennis",
+			"user1",
 			attributes))
 
 	assert.Equal(t, int64(40), evalDetails.Value)
@@ -55,7 +55,7 @@ func TestResolveDoubleValue(t *testing.T) {
 
 	evalDetails, _ := client.FloatValueDetails(
 		context.Background(), "test-flag.double-key", 99.99, openfeature.NewEvaluationContext(
-			"dennis",
+			"user1",
 			attributes))
 
 	assert.Equal(t, 20.203, evalDetails.Value)
@@ -67,7 +67,7 @@ func TestResolveStringValue(t *testing.T) {
 
 	evalDetails, _ := client.StringValueDetails(
 		context.Background(), "test-flag.string-key", "default", openfeature.NewEvaluationContext(
-			"dennis",
+			"user1",
 			attributes))
 
 	assert.Equal(t, "treatment", evalDetails.Value)
@@ -79,7 +79,7 @@ func TestResolveObjectValue(t *testing.T) {
 
 	evalDetails, _ := client.ObjectValueDetails(
 		context.Background(), "test-flag.struct-key", "default", openfeature.NewEvaluationContext(
-			"dennis",
+			"user1",
 			attributes))
 
 	_, ok := evalDetails.Value.(map[string]interface{})
@@ -92,7 +92,7 @@ func TestResolveNestedValue(t *testing.T) {
 
 	evalDetails, _ := client.BooleanValueDetails(
 		context.Background(), "test-flag.struct-key.boolean-key", true, openfeature.NewEvaluationContext(
-			"dennis",
+			"user1",
 			attributes))
 
 	assert.Equal(t, false, evalDetails.Value)
@@ -104,7 +104,7 @@ func TestResolveWholeFlagAsObject(t *testing.T) {
 
 	evalDetails, _ := client.ObjectValueDetails(
 		context.Background(), "test-flag", "default", openfeature.NewEvaluationContext(
-			"dennis",
+			"user1",
 			attributes))
 
 	_, ok := evalDetails.Value.(map[string]interface{})
@@ -117,7 +117,7 @@ func TestResolveWholeFlagAsObjectWithInts(t *testing.T) {
 
 	evalDetails, _ := client.ObjectValueDetails(
 		context.Background(), "test-flag", "default", openfeature.NewEvaluationContext(
-			"dennis",
+			"user1",
 			attributes))
 
 	value, _ := evalDetails.Value.(map[string]interface{})
@@ -138,7 +138,7 @@ func TestResolveWithWrongType(t *testing.T) {
 
 	evalDetails, _ := client.BooleanValueDetails(
 		context.Background(), "test-flag.integer-key", false, openfeature.NewEvaluationContext(
-			"dennis",
+			"user1",
 			attributes))
 
 	assert.Equal(t, false, evalDetails.Value)
@@ -152,7 +152,7 @@ func TestResolveWithUnexpectedFlag(t *testing.T) {
 
 	evalDetails, _ := client.BooleanValueDetails(
 		context.Background(), "test-flag.boolean-key", true, openfeature.NewEvaluationContext(
-			"dennis",
+			"user1",
 			attributes))
 
 	assert.Equal(t, true, evalDetails.Value)
@@ -167,7 +167,7 @@ func TestResolveWithNonExistingFlag(t *testing.T) {
 
 	evalDetails, _ := client.BooleanValueDetails(
 		context.Background(), "test-flag.boolean-key", true, openfeature.NewEvaluationContext(
-			"dennis",
+			"user1",
 			attributes))
 
 	assert.Equal(t, true, evalDetails.Value)
