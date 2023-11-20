@@ -1,6 +1,6 @@
 # Confidence OpenFeature Go Provider
 
-This repo contains the OpenFeature Go flag provider for Confidence.
+This repo contains the OpenFeature Go flag provider for [Confidence](https://confidence.spotify.com/).
 
 ## OpenFeature
 
@@ -55,7 +55,7 @@ client := openfeature.NewClient("testApp")
 attributes := make(map[string]interface{})
 attributes["country"] = "SE"
 attributes["plan"] = "premium"
-attributes["user_id"] = "dennis"
+attributes["user_id"] = "user1"
 
 boolValue, error := client.BooleanValue(context.Background(), "test-flag.boolean-key", false, 
 	openfeature.NewEvaluationContext("", attributes))
