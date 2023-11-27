@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.6](https://github.com/spotify/confidence-openfeature-provider-go/compare/v0.1.5...v0.1.6) (2023-11-22)
+
+
+### 🐛 Bug Fixes
+
+* Fix nested struct bug ([#37](https://github.com/spotify/confidence-openfeature-provider-go/issues/37)) ([5fb769f](https://github.com/spotify/confidence-openfeature-provider-go/commit/5fb769f3db4c00376ea4e34b510d4391f29003c5))
+
+
+### 📚 Documentation
+
+* Small cleanups and documentation ([#38](https://github.com/spotify/confidence-openfeature-provider-go/issues/38)) ([9c56b9f](https://github.com/spotify/confidence-openfeature-provider-go/commit/9c56b9fd0cd60266bf8ff44cf9606dadc92e832d))
+
 ## [0.1.5](https://github.com/spotify/confidence-openfeature-provider-go/compare/v0.1.4...v0.1.5) (2023-11-15)
 
 
