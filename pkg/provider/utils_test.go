@@ -304,6 +304,46 @@ func TestReplaceNumbers(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, expected, updatedMap)
 	})
+
+	t.Run("SuccessfulNestedFlowMap", func(t *testing.T) {
+		schema := map[string]interface{}{
+			"structKey": map[string]interface{}{
+				"structSchema": map[string]interface{}{
+					"schema": map[string]interface{}{
+						"nestedStructKey": map[string]interface{}{
+							"structSchema": map[string]interface{}{
+								"schema": map[string]interface{}{
+									"nestedDoubleKey": map[string]interface{}{
+										"doubleSchema": map[string]interface{}{},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		}
+
+		input := map[string]interface{}{
+			"structKey": map[string]interface{}{
+				"nestedStructKey": map[string]interface{}{
+					"nestedDoubleKey": json.Number("123.45"),
+				},
+			},
+		}
+
+		expected := map[string]interface{}{
+			"structKey": map[string]interface{}{
+				"nestedStructKey": map[string]interface{}{
+					"nestedDoubleKey": float64(123.45),
+				},
+			},
+		}
+
+		updatedMap, err := replaceNumbers("", input, schema)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, updatedMap)
+	})
 }
 
 func TestTypeMismatchError(t *testing.T) {
