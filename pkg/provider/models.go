@@ -15,18 +15,22 @@ type APIConfig struct {
 const (
 	APIRegionEU = iota
 	APIRegionUS = iota
+	APIRegionsGlobal = iota
 )
 
 // Private types below
 
 const euAPIURL = "https://resolver.eu.confidence.dev/v1"
 const usAPIURL = "https://resolver.us.confidence.dev/v1"
+const globalAPIURL = "https://resolver.confidence.dev/v1"
 
 func (r APIRegion) apiURL() string {
 	if r == APIRegionEU {
 		return euAPIURL
 	} else if r == APIRegionUS {
 		return usAPIURL
+	} else if r == APIRegionsGlobal {
+		return globalAPIURL
 	}
 	return ""
 }
