@@ -190,7 +190,7 @@ func TestResolveWithNonExistingFlag(t *testing.T) {
 
 func client(response resolveResponse, errorToReturn error) *openfeature.Client {
 	provider := FlagProvider{Config: APIConfig{APIKey: "apikey",
-		Region: APIRegionsGlobal}, ResolveClient: MockResolveClient{MockedResponse: response, MockedError: errorToReturn}}
+		Region: APIRegionGlobal}, ResolveClient: MockResolveClient{MockedResponse: response, MockedError: errorToReturn}}
 	openfeature.SetProvider(provider)
 	return openfeature.NewClient("testApp")
 }

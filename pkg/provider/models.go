@@ -13,9 +13,9 @@ type APIConfig struct {
 }
 
 const (
-	APIRegionEU = iota
-	APIRegionUS = iota
-	APIRegionsGlobal = iota
+	APIRegionEU     = iota
+	APIRegionUS     = iota
+	APIRegionGlobal = iota
 )
 
 // Private types below
@@ -29,7 +29,7 @@ func (r APIRegion) apiURL() string {
 		return euAPIURL
 	} else if r == APIRegionUS {
 		return usAPIURL
-	} else if r == APIRegionsGlobal {
+	} else if r == APIRegionGlobal {
 		return globalAPIURL
 	}
 	return ""
@@ -60,8 +60,8 @@ type resolveRequest struct {
 }
 
 type sdk struct {
-	Id         string    `json:"id"`
-	Version    string    `json:"version"`
+	Id      string `json:"id"`
+	Version string `json:"version"`
 }
 
 type resolveResponse struct {
