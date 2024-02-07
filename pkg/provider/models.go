@@ -12,6 +12,13 @@ type APIConfig struct {
 	Region APIRegion
 }
 
+func NewAPIConfig(apiKey string) *APIConfig {
+	return &APIConfig{
+		APIKey: apiKey,
+		Region: APIRegionGlobal,
+	}
+}
+
 const (
 	APIRegionEU     = iota
 	APIRegionUS     = iota

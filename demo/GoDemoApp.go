@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+
 	"github.com/google/uuid"
 	"github.com/open-feature/go-sdk/pkg/openfeature"
 	confidence "github.com/spotify/confidence-openfeature-provider-go/pkg/provider"
@@ -12,7 +13,7 @@ func main() {
 	clientSecret := "CLIENT_SECRET"
 	fmt.Println("Fetching the flags...")
 
-	provider, err := confidence.NewFlagProvider(confidence.APIConfig{APIKey: clientSecret, Region: confidence.APIRegionEU})
+	provider, err := confidence.NewFlagProvider(*confidence.NewAPIConfig(clientSecret))
 
 	if err != nil {
 		// handle error
