@@ -43,7 +43,7 @@ import (
     confidence "github.com/spotify/confidence-openfeature-provider-go/pkg/provider"
 )
 
-provider, err := confidence.NewFlagProvider(confidence.APIConfig{APIKey: "apiKey", Region: confidence.APIRegionEU})
+provider, err := confidence.NewFlagProvider(confidence.NewAPIConfig("clientSecret"))
 
 if err != nil {
     // handle error	
