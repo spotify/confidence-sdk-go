@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.1.7](https://github.com/spotify/confidence-openfeature-provider-go/compare/v0.1.6...v0.1.7) (2024-02-12)
+
+
+### 🐛 Bug Fixes
+
+* add a default endpoint to the provider ([#41](https://github.com/spotify/confidence-openfeature-provider-go/issues/41)) ([c4bfe45](https://github.com/spotify/confidence-openfeature-provider-go/commit/c4bfe45d76b8fff131e795c5462d59b9a8ea2098))
+* ApiConfig constructor with region defaults ([#43](https://github.com/spotify/confidence-openfeature-provider-go/issues/43)) ([064bef2](https://github.com/spotify/confidence-openfeature-provider-go/commit/064bef291ec72a6ff3facf4a9ecc7d6377ef410d))
+
+
+### 📚 Documentation
+
+* update instructions on creating ApiConfig ([#44](https://github.com/spotify/confidence-openfeature-provider-go/issues/44)) ([dd593f6](https://github.com/spotify/confidence-openfeature-provider-go/commit/dd593f676fe7309e6b0d71e01bbf8c08a05456d2))
+
 ## [0.1.6](https://github.com/spotify/confidence-openfeature-provider-go/compare/v0.1.5...v0.1.6) (2023-11-22)
 
 
