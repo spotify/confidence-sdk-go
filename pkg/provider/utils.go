@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/open-feature/go-sdk/pkg/openfeature"
+	"github.com/open-feature/go-sdk/openfeature"
 )
 
 func splitFlagString(flag string) (string, string) {
