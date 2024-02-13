@@ -69,7 +69,7 @@ func (e FlagProvider) resolveFlag(ctx context.Context, flag string, defaultValue
 	requestFlagName := fmt.Sprintf("flags/%s", flagName)
 	resp, err := e.ResolveClient.sendResolveRequest(ctx,
 		resolveRequest{ClientSecret: e.Config.APIKey,
-			Flags: []string{requestFlagName}, Apply: true, EvaluationContext: evalCtx,
+			Flags: []string{requestFlagName}, Apply: true, EvaluationContext: processTargetingKey(evalCtx),
 			Sdk: sdk{Id: SDK_ID, Version: SDK_VERSION}})
 
 	if err != nil {
@@ -94,6 +94,15 @@ func (e FlagProvider) resolveFlag(ctx context.Context, flag string, defaultValue
 	}
 
 	return processResolvedFlag(resolvedFlag, defaultValue, expectedKind, propertyPath)
+}
+
+func processTargetingKey(evalCtx openfeature.FlattenedContext) openfeature.FlattenedContext {
+	newEvalContext := openfeature.FlattenedContext{}
+	newEvalContext = evalCtx
+	if targetingKey, exists := evalCtx["targetingKey"]; exists {
+		newEvalContext["targeting_key"] = targetingKey
+	}
+	return newEvalContext
 }
 
 func (e FlagProvider) Hooks() []openfeature.Hook {
