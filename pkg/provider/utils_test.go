@@ -3,7 +3,7 @@ package provider
 import (
 	"encoding/json"
 	"errors"
-	"github.com/open-feature/go-sdk/pkg/openfeature"
+	"github.com/open-feature/go-sdk/openfeature"
 	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"

@@ -39,7 +39,7 @@ The flag's schema is validated against the requested data type, and if it doesn'
 
 ```go
 import (
-    "github.com/open-feature/go-sdk/pkg/openfeature"
+    "github.com/open-feature/go-sdk/openfeature"
     confidence "github.com/spotify/confidence-openfeature-provider-go/pkg/provider"
 )
 
