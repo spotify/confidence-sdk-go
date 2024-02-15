@@ -15,15 +15,17 @@ import (
 type MockResolveClient struct {
 	MockedResponse resolveResponse
 	MockedError    error
+	TestingT       *testing.T
 }
 
 func (r MockResolveClient) sendResolveRequest(_ context.Context,
-	_ resolveRequest) (resolveResponse, error) {
-	return r.MockedResponse, r.MockedError
+	request resolveRequest) (resolveResponse, error) {
+	assert.Equal(r.TestingT, "user1", request.EvaluationContext["targeting_key"])
+    return r.MockedResponse, r.MockedError
 }
 
 func TestResolveBoolValue(t *testing.T) {
-	client := client(templateResponse(), nil)
+	client := client(t, templateResponse(), nil)
 	attributes := make(map[string]interface{})
 
 	evalDetails, _ := client.BooleanValueDetails(
@@ -38,7 +40,7 @@ func TestResolveBoolValue(t *testing.T) {
 }
 
 func TestResolveIntValue(t *testing.T) {
-	client := client(templateResponse(), nil)
+	client := client(t, templateResponse(), nil)
 	attributes := make(map[string]interface{})
 
 	evalDetails, _ := client.IntValueDetails(
@@ -50,7 +52,7 @@ func TestResolveIntValue(t *testing.T) {
 }
 
 func TestResolveDoubleValue(t *testing.T) {
-	client := client(templateResponse(), nil)
+	client := client(t, templateResponse(), nil)
 	attributes := make(map[string]interface{})
 
 	evalDetails, _ := client.FloatValueDetails(
@@ -62,7 +64,7 @@ func TestResolveDoubleValue(t *testing.T) {
 }
 
 func TestResolveStringValue(t *testing.T) {
-	client := client(templateResponse(), nil)
+	client := client(t, templateResponse(), nil)
 	attributes := make(map[string]interface{})
 
 	evalDetails, _ := client.StringValueDetails(
@@ -74,7 +76,7 @@ func TestResolveStringValue(t *testing.T) {
 }
 
 func TestResolveObjectValue(t *testing.T) {
-	client := client(templateResponse(), nil)
+	client := client(t, templateResponse(), nil)
 	attributes := make(map[string]interface{})
 
 	evalDetails, _ := client.ObjectValueDetails(
@@ -87,7 +89,7 @@ func TestResolveObjectValue(t *testing.T) {
 }
 
 func TestResolveNestedValue(t *testing.T) {
-	client := client(templateResponse(), nil)
+	client := client(t, templateResponse(), nil)
 	attributes := make(map[string]interface{})
 
 	evalDetails, _ := client.BooleanValueDetails(
@@ -99,19 +101,19 @@ func TestResolveNestedValue(t *testing.T) {
 }
 
 func TestResolveDoubleNestedValue(t *testing.T) {
-	client := client(templateResponse(), nil)
+	client := client(t, templateResponse(), nil)
 	attributes := make(map[string]interface{})
 
 	evalDetails, _ := client.BooleanValueDetails(
 		context.Background(), "test-flag.struct-key.nested-struct-key.nested-boolean-key", true, openfeature.NewEvaluationContext(
-			"dennis",
+			"user1",
 			attributes))
 
 	assert.Equal(t, false, evalDetails.Value)
 }
 
 func TestResolveWholeFlagAsObject(t *testing.T) {
-	client := client(templateResponse(), nil)
+	client := client(t, templateResponse(), nil)
 	attributes := make(map[string]interface{})
 
 	evalDetails, _ := client.ObjectValueDetails(
@@ -124,7 +126,7 @@ func TestResolveWholeFlagAsObject(t *testing.T) {
 }
 
 func TestResolveWholeFlagAsObjectWithInts(t *testing.T) {
-	client := client(templateResponse(), nil)
+	client := client(t, templateResponse(), nil)
 	attributes := make(map[string]interface{})
 
 	evalDetails, _ := client.ObjectValueDetails(
@@ -145,7 +147,7 @@ func TestResolveWholeFlagAsObjectWithInts(t *testing.T) {
 }
 
 func TestResolveWithWrongType(t *testing.T) {
-	client := client(templateResponse(), nil)
+	client := client(t, templateResponse(), nil)
 	attributes := make(map[string]interface{})
 
 	evalDetails, _ := client.BooleanValueDetails(
@@ -159,7 +161,7 @@ func TestResolveWithWrongType(t *testing.T) {
 }
 
 func TestResolveWithUnexpectedFlag(t *testing.T) {
-	client := client(templateResponseWithFlagName("wrong-flag"), nil)
+	client := client(t, templateResponseWithFlagName("wrong-flag"), nil)
 	attributes := make(map[string]interface{})
 
 	evalDetails, _ := client.BooleanValueDetails(
@@ -174,7 +176,7 @@ func TestResolveWithUnexpectedFlag(t *testing.T) {
 }
 
 func TestResolveWithNonExistingFlag(t *testing.T) {
-	client := client(emptyResponse(), nil)
+	client := client(t, emptyResponse(), nil)
 	attributes := make(map[string]interface{})
 
 	evalDetails, _ := client.BooleanValueDetails(
@@ -188,9 +190,9 @@ func TestResolveWithNonExistingFlag(t *testing.T) {
 	assert.Equal(t, "no active flag 'test-flag' was found", evalDetails.ErrorMessage)
 }
 
-func client(response resolveResponse, errorToReturn error) *openfeature.Client {
+func client(t *testing.T, response resolveResponse, errorToReturn error) *openfeature.Client {
 	provider := FlagProvider{Config: APIConfig{APIKey: "apikey",
-		Region: APIRegionGlobal}, ResolveClient: MockResolveClient{MockedResponse: response, MockedError: errorToReturn}}
+		Region: APIRegionGlobal}, ResolveClient: MockResolveClient{MockedResponse: response, MockedError: errorToReturn, TestingT: t}}
 	openfeature.SetProvider(provider)
 	return openfeature.NewClient("testApp")
 }

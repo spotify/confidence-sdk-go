@@ -24,11 +24,10 @@ func main() {
 
 	attributes := make(map[string]interface{})
 	targetingKey := uuid.New().String()
-	attributes["targeting_key"] = targetingKey
 
 	fmt.Println(" Random UUID -> " + targetingKey)
 
-	of := openfeature.NewEvaluationContext("", attributes)
+	of := openfeature.NewEvaluationContext(targetingKey, attributes)
 
 	colorValue, _ := client.StringValue(context.Background(), "hawkflag.color", "defaultValue", of)
 	messageValue, _ := client.StringValue(context.Background(), "hawkflag.message", "defaultValue", of)
