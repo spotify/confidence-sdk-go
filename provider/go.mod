@@ -1,6 +1,6 @@
 module github.com/spotify/confidence-openfeature-provider-go/provider
 
-go 1.22.2
+go 1.19
 
 replace github.com/spotify/confidence-openfeature-provider-go/confidence v1.0.0 => ../confidence
 

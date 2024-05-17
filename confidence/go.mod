@@ -1,6 +1,6 @@
 module github.com/spotify/confidence-openfeature-provider-go/confidence
 
-go 1.22.2
+go 1.19
 
 require github.com/stretchr/testify v1.9.0
 
