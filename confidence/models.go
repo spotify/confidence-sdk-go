@@ -1,4 +1,4 @@
-package provider
+package confidence
 
 import (
 	"context"
@@ -6,6 +6,57 @@ import (
 )
 
 type APIRegion int64
+
+func NewFlagNotFoundResolutionError(msg string) ResolutionError {
+	return ResolutionError{
+		code:    FlagNotFoundCode,
+		message: msg,
+	}
+}
+
+func NewParseErrorResolutionError(msg string) ResolutionError {
+	return ResolutionError{
+		code:    ParseErrorCode,
+		message: msg,
+	}
+}
+
+// NewTypeMismatchResolutionError constructs a resolution error with code TYPE_MISMATCH
+//
+// Explanation - The type of the flag value does not match the expected type.
+func NewTypeMismatchResolutionError(msg string) ResolutionError {
+	return ResolutionError{
+		code:    TypeMismatchCode,
+		message: msg,
+	}
+}
+
+// NewTargetingKeyMissingResolutionError constructs a resolution error with code TARGETING_KEY_MISSING
+//
+// Explanation - The provider requires a targeting key and one was not provided in the evaluation context.
+func NewTargetingKeyMissingResolutionError(msg string) ResolutionError {
+	return ResolutionError{
+		code:    TargetingKeyMissingCode,
+		message: msg,
+	}
+}
+
+func NewInvalidContextResolutionError(msg string) ResolutionError {
+	return ResolutionError{
+		code:    InvalidContextCode,
+		message: msg,
+	}
+}
+
+// NewGeneralResolutionError constructs a resolution error with code GENERAL
+//
+// Explanation - The error was for a reason not enumerated above.
+func NewGeneralResolutionError(msg string) ResolutionError {
+	return ResolutionError{
+		code:    GeneralCode,
+		message: msg,
+	}
+}
 
 type APIConfig struct {
 	APIKey string
@@ -42,7 +93,7 @@ func (r APIRegion) apiURL() string {
 	return ""
 }
 
-func (c APIConfig) validate() error {
+func (c APIConfig) Validate() error {
 	if c.APIKey == "" {
 		return errors.New("api key needs to be set")
 	}
@@ -52,13 +103,13 @@ func (c APIConfig) validate() error {
 	return nil
 }
 
-type resolveClient interface {
-	sendResolveRequest(ctx context.Context, request resolveRequest) (resolveResponse, error)
+type ResolveClient interface {
+	SendResolveRequest(ctx context.Context, request ResolveRequest) (ResolveResponse, error)
 }
 
 var errFlagNotFound = errors.New("flag not found")
 
-type resolveRequest struct {
+type ResolveRequest struct {
 	ClientSecret      string                 `json:"client_secret"`
 	Apply             bool                   `json:"apply"`
 	EvaluationContext map[string]interface{} `json:"evaluation_context"`
@@ -71,7 +122,7 @@ type sdk struct {
 	Version string `json:"version"`
 }
 
-type resolveResponse struct {
+type ResolveResponse struct {
 	ResolvedFlags []resolvedFlag `json:"resolvedFlags"`
 	ResolveToken  string         `json:"resolveToken"`
 }

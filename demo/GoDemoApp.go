@@ -6,18 +6,17 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/open-feature/go-sdk/openfeature"
-	confidence "github.com/spotify/confidence-openfeature-provider-go/pkg/provider"
+	c "github.com/spotify/confidence-openfeature-provider-go/confidence"
+	p "github.com/spotify/confidence-openfeature-provider-go/provider"
 )
 
 func main() {
 	clientSecret := "CLIENT_SECRET"
 	fmt.Println("Fetching the flags...")
 
-	provider, err := confidence.NewFlagProvider(*confidence.NewAPIConfig(clientSecret))
+	confidence := c.NewConfidenceBuilder().SetAPIConfig(c.APIConfig{APIKey: clientSecret}).Build()
 
-	if err != nil {
-		// handle error
-	}
+	provider := p.NewFlagProvider(confidence)
 
 	openfeature.SetProvider(provider)
 	client := openfeature.NewClient("testApp")
