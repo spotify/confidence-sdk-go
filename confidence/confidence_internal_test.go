@@ -24,7 +24,7 @@ func (r MockResolveClient) SendResolveRequest(_ context.Context,
 
 func TestResolveBoolValue(t *testing.T) {
 	client := client(t, templateResponse(), nil)
-	client.putContext("targeting_key", "user1")
+	client.PutContext("targeting_key", "user1")
 	evalDetails := client.GetBoolFlag(context.Background(), "test-flag.boolean-key", false)
 
 	assert.Equal(t, true, evalDetails.Value)
@@ -34,7 +34,7 @@ func TestResolveBoolValue(t *testing.T) {
 
 func TestResolveIntValue(t *testing.T) {
 	client := client(t, templateResponse(), nil)
-	client.putContext("targeting_key", "user1")
+	client.PutContext("targeting_key", "user1")
 
 	evalDetails := client.GetIntFlag(context.Background(), "test-flag.integer-key", 99)
 
@@ -43,7 +43,7 @@ func TestResolveIntValue(t *testing.T) {
 
 func TestResolveDoubleValue(t *testing.T) {
 	client := client(t, templateResponse(), nil)
-	client.putContext("targeting_key", "user1")
+	client.PutContext("targeting_key", "user1")
 
 	evalDetails := client.GetDoubleFlag(context.Background(), "test-flag.double-key", 99.99)
 
@@ -52,7 +52,7 @@ func TestResolveDoubleValue(t *testing.T) {
 
 func TestResolveStringValue(t *testing.T) {
 	client := client(t, templateResponse(), nil)
-	client.putContext("targeting_key", "user1")
+	client.PutContext("targeting_key", "user1")
 
 	evalDetails := client.GetStringFlag(context.Background(), "test-flag.string-key", "default")
 
@@ -61,7 +61,7 @@ func TestResolveStringValue(t *testing.T) {
 
 func TestResolveObjectValue(t *testing.T) {
 	client := client(t, templateResponse(), nil)
-	client.putContext("targeting_key", "user1")
+	client.PutContext("targeting_key", "user1")
 
 	evalDetails := client.GetObjectFlag(context.Background(), "test-flag.struct-key", "default")
 	_, ok := evalDetails.Value.(map[string]interface{})
@@ -70,7 +70,7 @@ func TestResolveObjectValue(t *testing.T) {
 
 func TestResolveNestedValue(t *testing.T) {
 	client := client(t, templateResponse(), nil)
-	client.putContext("targeting_key", "user1")
+	client.PutContext("targeting_key", "user1")
 
 	evalDetails := client.GetBoolFlag(context.Background(), "test-flag.struct-key.boolean-key", true)
 	assert.Equal(t, false, evalDetails.Value)
@@ -78,7 +78,7 @@ func TestResolveNestedValue(t *testing.T) {
 
 func TestResolveDoubleNestedValue(t *testing.T) {
 	client := client(t, templateResponse(), nil)
-	client.putContext("targeting_key", "user1")
+	client.PutContext("targeting_key", "user1")
 
 	evalDetails := client.GetBoolFlag(context.Background(), "test-flag.struct-key.nested-struct-key.nested-boolean-key", true)
 	assert.Equal(t, false, evalDetails.Value)
@@ -86,7 +86,7 @@ func TestResolveDoubleNestedValue(t *testing.T) {
 
 func TestResolveWholeFlagAsObject(t *testing.T) {
 	client := client(t, templateResponse(), nil)
-	client.putContext("targeting_key", "user1")
+	client.PutContext("targeting_key", "user1")
 
 	evalDetails := client.GetObjectFlag(context.Background(), "test-flag", "default")
 	_, ok := evalDetails.Value.(map[string]interface{})
@@ -95,7 +95,7 @@ func TestResolveWholeFlagAsObject(t *testing.T) {
 
 func TestResolveWholeFlagAsObjectWithInts(t *testing.T) {
 	client := client(t, templateResponse(), nil)
-	client.putContext("targeting_key", "user1")
+	client.PutContext("targeting_key", "user1")
 
 	evalDetails := client.GetObjectFlag(context.Background(), "test-flag", "default")
 
@@ -113,7 +113,7 @@ func TestResolveWholeFlagAsObjectWithInts(t *testing.T) {
 
 func TestResolveWithWrongType(t *testing.T) {
 	client := client(t, templateResponse(), nil)
-	client.putContext("targeting_key", "user1")
+	client.PutContext("targeting_key", "user1")
 
 	evalDetails := client.GetBoolFlag(context.Background(), "test-flag.integer-key", false)
 
@@ -124,7 +124,7 @@ func TestResolveWithWrongType(t *testing.T) {
 
 func TestResolveWithUnexpectedFlag(t *testing.T) {
 	client := client(t, templateResponseWithFlagName("wrong-flag"), nil)
-	client.putContext("targeting_key", "user1")
+	client.PutContext("targeting_key", "user1")
 
 	evalDetails := client.GetBoolFlag(context.Background(), "test-flag.boolean-key", true)
 
@@ -136,7 +136,7 @@ func TestResolveWithUnexpectedFlag(t *testing.T) {
 
 func TestResolveWithNonExistingFlag(t *testing.T) {
 	client := client(t, emptyResponse(), nil)
-	client.putContext("targeting_key", "user1")
+	client.PutContext("targeting_key", "user1")
 
 	evalDetails := client.GetBoolFlag(context.Background(), "test-flag.boolean-key", true)
 

@@ -3,6 +3,7 @@ package confidence
 import (
 	"context"
 	"fmt"
+	"time"
 	"net/http"
 	"reflect"
 	"strings"
@@ -18,24 +19,28 @@ type ContextProvider interface {
 }
 
 var (
-	SDK_ID      = "SDK_ID_GO_PROVIDER"
+	SDK_ID      = "SDK_ID_GO_CONFIDENCE"
 	SDK_VERSION = "0.1.8" // x-release-please-version
 )
 
 type Confidence struct {
 	parent        ContextProvider
+	uploader      EventUploader
 	contextMap    map[string]interface{}
 	Config        APIConfig
 	ResolveClient ResolveClient
 }
 
 func (e Confidence) GetContext() map[string]interface{} {
-	currentMap := e.contextMap
+	currentMap := map[string]interface{}{}
 	parentMap := make(map[string]interface{})
 	if e.parent != nil {
 		parentMap = e.parent.GetContext()
 	}
-	for key, value := range parentMap {
+for key, value := range parentMap {
+		currentMap[key] = value
+	}
+	for key, value := range e.contextMap {
 		currentMap[key] = value
 	}
 	return currentMap
@@ -69,14 +74,48 @@ func NewConfidenceBuilder() ConfidenceBuilder {
 	}
 }
 
-func (e Confidence) putContext(key string, value interface{}) {
+func (e Confidence) PutContext(key string, value interface{}) {
 	e.contextMap[key] = value
 }
 
+func (e Confidence) Track(ctx context.Context, eventName string, message map[string]interface{}) {
+	newMap := e.GetContext()
+
+	for key, value := range message {
+		newMap[key] = value
+	}
+
+	go func() {
+		currentTime := time.Now()
+		iso8601Time := currentTime.Format(time.RFC3339)
+		event := Event {
+			EventDefinition: fmt.Sprintf("eventDefinitions/%s", eventName),
+			EventTime:       iso8601Time,
+			Payload:         newMap,
+		}
+		batch := EventBatchRequest{
+			CclientSecret: e.Config.APIKey,
+			Sdk:           sdk{SDK_ID, SDK_VERSION},
+			SendTime:      iso8601Time,
+			Events:        []Event{event},
+		}
+		e.uploader.upload(ctx, batch)
+	}()
+}
+
 func (e Confidence) WithContext(context map[string]interface{}) Confidence {
+	newMap := map[string]interface{}{}
+	for key, value := range e.GetContext() {
+		newMap[key] = value
+	}
+
+	for key, value := range context {
+		newMap[key] = value
+	}
+
 	return Confidence{
 		parent:        &e,
-		contextMap:    context,
+		contextMap:    newMap,
 		Config:        e.Config,
 		ResolveClient: e.ResolveClient,
 	}

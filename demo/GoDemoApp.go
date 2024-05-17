@@ -16,6 +16,11 @@ func main() {
 
 	confidence := c.NewConfidenceBuilder().SetAPIConfig(c.APIConfig{APIKey: clientSecret}).Build()
 
+	confidence.PutContext("hello", "world")
+
+	for range make([]struct{}, 10) {
+		confidence.Track(context.Background(), "navigate", map[string]interface{}{"test": "value"})
+	}
 	provider := p.NewFlagProvider(confidence)
 
 	openfeature.SetProvider(provider)
