@@ -3,6 +3,7 @@ package confidence
 import (
 	"context"
 	"fmt"
+	"sync"
 	"time"
 	"net/http"
 	"reflect"
@@ -78,13 +79,15 @@ func (e Confidence) PutContext(key string, value interface{}) {
 	e.contextMap[key] = value
 }
 
-func (e Confidence) Track(ctx context.Context, eventName string, message map[string]interface{}) {
+func (e Confidence) Track(ctx context.Context, eventName string, message map[string]interface{}) *sync.WaitGroup {
 	newMap := e.GetContext()
 
 	for key, value := range message {
 		newMap[key] = value
 	}
 
+	var wg sync.WaitGroup
+	wg.Add(1)
 	go func() {
 		currentTime := time.Now()
 		iso8601Time := currentTime.Format(time.RFC3339)
@@ -100,7 +103,9 @@ func (e Confidence) Track(ctx context.Context, eventName string, message map[str
 			Events:        []Event{event},
 		}
 		e.uploader.upload(ctx, batch)
+		wg.Done()
 	}()
+	return &wg
 }
 
 func (e Confidence) WithContext(context map[string]interface{}) Confidence {

@@ -18,9 +18,6 @@ func main() {
 
 	confidence.PutContext("hello", "world")
 
-	for range make([]struct{}, 10) {
-		confidence.Track(context.Background(), "navigate", map[string]interface{}{"test": "value"})
-	}
 	provider := p.NewFlagProvider(confidence)
 
 	openfeature.SetProvider(provider)
@@ -50,4 +47,7 @@ func main() {
 	default:
 		fmt.Println(colorRed, "Message --> "+messageValue)
 	}
+
+	wg := confidence.Track(context.Background(), "navigate", map[string]interface{}{"test": "value"})
+	wg.Wait()
 }
