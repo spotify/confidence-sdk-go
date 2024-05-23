@@ -42,7 +42,11 @@ func (e Confidence) GetContext() map[string]interface{} {
 		currentMap[key] = value
 	}
 	for key, value := range e.contextMap {
-		currentMap[key] = value
+		if value == nil {
+			delete(currentMap, key)
+		} else {
+			currentMap[key] = value
+		}
 	}
 	return currentMap
 }

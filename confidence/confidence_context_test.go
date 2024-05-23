@@ -1,8 +1,9 @@
 package confidence
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestContextIsInConfidenceObject(t *testing.T) {
@@ -26,6 +27,14 @@ func TestChildContextOverrideParentContext(t *testing.T) {
 	child := client.WithContext(map[string]interface{}{"hello": "boom"})
 	assert.Equal(t, child.GetContext(), map[string]interface{}{"hello": "boom"})
 	assert.Equal(t, client.GetContext(), map[string]interface{}{"hello": "hey"})
+}
+
+func TestChildContextRemoveParentContext(t *testing.T) {
+	client := create_confidence(t, templateResponse())
+	client.PutContext("hello", "hey")
+	child := client.WithContext(map[string]interface{}{})
+	child.PutContext("hello", nil)
+	assert.Equal(t, child.GetContext(), map[string]interface{}{})
 }
 
 func create_confidence(t *testing.T, response ResolveResponse) *Confidence {
