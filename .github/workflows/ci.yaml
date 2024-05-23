@@ -19,8 +19,31 @@ jobs:
         with:
           go-version: '1.20'
 
-      - name: Build
-        run: cd pkg/provider && go build -v .
+      - name: Build Provider
+        run: cd provider && go build -v .
 
-      - name: Test
-        run: cd pkg/provider && go test -v
+      - name: Build Confidence
+        run: cd confidence && go build -v .
+
+      - name: Test Provider
+        run: cd provider && go test -v
+
+      - name: Test Confidence
+        run: cd confidence && go test -v
+      - name: Run gofmt
+        run: |
+          modules=("confidence" "demo" "demo-open-feature" "provider")
+          fmt_issues=""
+          for module in "${modules[@]}"; do
+            fmt_output=$(gofmt -l "$module")
+            if [ -n "$fmt_output" ]; then
+              fmt_issues+="$fmt_output"$'\n'
+            fi
+          done
+
+          if [ -n "$fmt_issues" ]; then
+            echo "The following files are not properly formatted:"
+            echo "$fmt_issues"
+            echo "Please run 'gofmt -w .' in the respective module directories to format your code."
+            exit 1
+          fi

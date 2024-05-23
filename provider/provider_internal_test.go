@@ -5,23 +5,23 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/open-feature/go-sdk/openfeature"
+	confidence "github.com/spotify/confidence-openfeature-provider-go/confidence"
+	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
-
-	"github.com/open-feature/go-sdk/openfeature"
-	"github.com/stretchr/testify/assert"
 )
 
 type MockResolveClient struct {
-	MockedResponse resolveResponse
+	MockedResponse confidence.ResolveResponse
 	MockedError    error
 	TestingT       *testing.T
 }
 
-func (r MockResolveClient) sendResolveRequest(_ context.Context,
-	request resolveRequest) (resolveResponse, error) {
+func (r MockResolveClient) SendResolveRequest(_ context.Context,
+	request confidence.ResolveRequest) (confidence.ResolveResponse, error) {
 	assert.Equal(r.TestingT, "user1", request.EvaluationContext["targeting_key"])
-    return r.MockedResponse, r.MockedError
+	return r.MockedResponse, r.MockedError
 }
 
 func TestResolveBoolValue(t *testing.T) {
@@ -187,60 +187,63 @@ func TestResolveWithNonExistingFlag(t *testing.T) {
 	assert.Equal(t, true, evalDetails.Value)
 	assert.Equal(t, openfeature.ErrorReason, evalDetails.Reason)
 	assert.Equal(t, openfeature.FlagNotFoundCode, evalDetails.ErrorCode)
-	assert.Equal(t, "no active flag 'test-flag' was found", evalDetails.ErrorMessage)
+	assert.Equal(t, "Flag not found", evalDetails.ErrorMessage)
 }
 
-func client(t *testing.T, response resolveResponse, errorToReturn error) *openfeature.Client {
-	provider := FlagProvider{Config: APIConfig{APIKey: "apikey",
-		Region: APIRegionGlobal}, ResolveClient: MockResolveClient{MockedResponse: response, MockedError: errorToReturn, TestingT: t}}
+func client(t *testing.T, response confidence.ResolveResponse, errorToReturn error) *openfeature.Client {
+	resolveClient := MockResolveClient{MockedResponse: response, MockedError: errorToReturn, TestingT: t}
+	conf := confidence.NewConfidenceBuilder().SetAPIConfig(confidence.APIConfig{APIKey: "apiKey"}).SetResolveClient(resolveClient).Build()
+	provider := FlagProvider{
+		confidence: conf,
+	}
 	openfeature.SetProvider(provider)
 	return openfeature.NewClient("testApp")
 }
 
-func templateResponse() resolveResponse {
+func templateResponse() confidence.ResolveResponse {
 	return templateResponseWithFlagName("test-flag")
 }
 
-func templateResponseWithFlagName(flagName string) resolveResponse {
+func templateResponseWithFlagName(flagName string) confidence.ResolveResponse {
 	templateResolveResponse := fmt.Sprintf(`
 {
- "resolvedFlags": [
- {
-  "flag": "flags/%[1]s",
-  "variant": "flags/%[1]s/variants/treatment",
-  "value": {
-   "struct-key": {
-    "boolean-key": false,
-    "string-key": "treatment-struct",
-    "double-key": 123.23,
-    "integer-key": 23,
+"resolvedFlags": [
+{
+"flag": "flags/%[1]s",
+"variant": "flags/%[1]s/variants/treatment",
+"value": {
+"struct-key": {
+"boolean-key": false,
+"string-key": "treatment-struct",
+"double-key": 123.23,
+"integer-key": 23,
 	"nested-struct-key": {
 		"nested-boolean-key": false
 	}
-   },
-   "boolean-key": true,
-   "string-key": "treatment",
-   "double-key": 20.203,
-   "integer-key": 40
-  },
-  "flagSchema": {
-   "schema": {
-    "struct-key": {
-     "structSchema": {
-      "schema": {
-       "boolean-key": {
-        "boolSchema": {}
-       },
-       "string-key": {
-        "stringSchema": {}
-       },
-       "double-key": {
-        "doubleSchema": {}
-       },
-       "integer-key": {
-        "intSchema": {}
-       },
-	   "nested-struct-key": {
+},
+"boolean-key": true,
+"string-key": "treatment",
+"double-key": 20.203,
+"integer-key": 40
+},
+"flagSchema": {
+"schema": {
+"struct-key": {
+"structSchema": {
+"schema": {
+"boolean-key": {
+"boolSchema": {}
+},
+"string-key": {
+"stringSchema": {}
+},
+"double-key": {
+"doubleSchema": {}
+},
+"integer-key": {
+"intSchema": {}
+},
+	"nested-struct-key": {
 		"structSchema": {
 			"schema": {
 				"nested-boolean-key": {
@@ -248,45 +251,45 @@ func templateResponseWithFlagName(flagName string) resolveResponse {
 				}
 			}
 		}
-	   }
-      }
-     }
-    },
-    "boolean-key": {
-     "boolSchema": {}
-    },
-    "string-key": {
-     "stringSchema": {}
-    },
-    "double-key": {
-     "doubleSchema": {}
-    },
-    "integer-key": {
-     "intSchema": {}
-    }
-   }
-  },
-  "reason": "RESOLVE_REASON_MATCH"
- }],
- "resolveToken": ""
+	}
+}
+}
+},
+"boolean-key": {
+"boolSchema": {}
+},
+"string-key": {
+"stringSchema": {}
+},
+"double-key": {
+"doubleSchema": {}
+},
+"integer-key": {
+"intSchema": {}
+}
+}
+},
+"reason": "RESOLVE_REASON_MATCH"
+}],
+"resolveToken": ""
 }
 `, flagName)
-	var result resolveResponse
+	var result confidence.ResolveResponse
 	decoder := json.NewDecoder(bytes.NewBuffer([]byte(templateResolveResponse)))
 	decoder.UseNumber()
 	_ = decoder.Decode(&result)
 	return result
 }
 
-func emptyResponse() resolveResponse {
+func emptyResponse() confidence.ResolveResponse {
 	templateResolveResponse :=
 		`
 {
- "resolvedFlags": [],
- "resolveToken": ""
+"resolvedFlags": [],
+"resolveToken": ""
 }
 `
-	var result resolveResponse
+	var result confidence.ResolveResponse
 	decoder := json.NewDecoder(bytes.NewBuffer([]byte(templateResolveResponse)))
 	decoder.UseNumber()
 	_ = decoder.Decode(&result)

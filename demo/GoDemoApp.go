@@ -3,34 +3,18 @@ package main
 import (
 	"context"
 	"fmt"
-
-	"github.com/google/uuid"
-	"github.com/open-feature/go-sdk/openfeature"
-	confidence "github.com/spotify/confidence-openfeature-provider-go/pkg/provider"
+	c "github.com/spotify/confidence-openfeature-provider-go/confidence"
 )
 
 func main() {
-	clientSecret := "CLIENT_SECRET"
 	fmt.Println("Fetching the flags...")
 
-	provider, err := confidence.NewFlagProvider(*confidence.NewAPIConfig(clientSecret))
+	confidence := c.NewConfidenceBuilder().SetAPIConfig(c.APIConfig{APIKey: "API_KEY"}).Build()
+	targetingKey := "Random_targeting_key"
+	confidence.PutContext("targeting_key", targetingKey)
 
-	if err != nil {
-		// handle error
-	}
-
-	openfeature.SetProvider(provider)
-	client := openfeature.NewClient("testApp")
-
-	attributes := make(map[string]interface{})
-	targetingKey := uuid.New().String()
-
-	fmt.Println(" Random UUID -> " + targetingKey)
-
-	of := openfeature.NewEvaluationContext(targetingKey, attributes)
-
-	colorValue, _ := client.StringValue(context.Background(), "hawkflag.color", "defaultValue", of)
-	messageValue, _ := client.StringValue(context.Background(), "hawkflag.message", "defaultValue", of)
+	colorValue := confidence.GetStringFlag(context.Background(), "hawkflag.color", "defaultValue").Value
+	messageValue := confidence.GetStringFlag(context.Background(), "hawkflag.message", "defaultValue").Value
 
 	colorYellow := "\033[33m"
 	colorGreen := "\033[32m"
@@ -46,4 +30,9 @@ func main() {
 	default:
 		fmt.Println(colorRed, "Message --> "+messageValue)
 	}
+
+	wg := confidence.Track(context.Background(), "page-viewed", map[string]interface{}{})
+	wg.Wait()
+	fmt.Println("Event sent")
+
 }

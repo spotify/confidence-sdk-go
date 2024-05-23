@@ -1,4 +1,4 @@
-package provider
+package confidence
 
 import (
 	"bytes"
@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-type httpResolveClient struct {
+type HttpResolveClient struct {
 	Client *http.Client
 	Config APIConfig
 }
@@ -25,37 +25,37 @@ func parseErrorMessage(body io.ReadCloser) string {
 	return resolveError.Message
 }
 
-func (client httpResolveClient) sendResolveRequest(ctx context.Context,
-	request resolveRequest) (resolveResponse, error) {
+func (client HttpResolveClient) SendResolveRequest(ctx context.Context,
+	request ResolveRequest) (ResolveResponse, error) {
 	jsonRequest, err := json.Marshal(request)
 	if err != nil {
-		return resolveResponse{}, fmt.Errorf("error when serializing request to the resolver service: %w", err)
+		return ResolveResponse{}, fmt.Errorf("error when serializing request to the resolver service: %w", err)
 	}
 
 	payload := bytes.NewBuffer(jsonRequest)
 	req, err := http.NewRequestWithContext(ctx,
 		http.MethodPost, fmt.Sprintf("%s/flags:resolve", client.Config.Region.apiURL()), payload)
 	if err != nil {
-		return resolveResponse{}, err
+		return ResolveResponse{}, err
 	}
 
 	resp, err := client.Client.Do(req)
 	if err != nil {
-		return resolveResponse{}, fmt.Errorf("error when calling the resolver service: %w", err)
+		return ResolveResponse{}, fmt.Errorf("error when calling the resolver service: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return resolveResponse{},
+		return ResolveResponse{},
 			fmt.Errorf("got '%s' error from the resolver service: %s", resp.Status, parseErrorMessage(resp.Body))
 	}
 
-	var result resolveResponse
+	var result ResolveResponse
 	decoder := json.NewDecoder(resp.Body)
 	decoder.UseNumber()
 	err = decoder.Decode(&result)
 	if err != nil {
-		return resolveResponse{}, fmt.Errorf("error when deserializing response from the resolver service: %w", err)
+		return ResolveResponse{}, fmt.Errorf("error when deserializing response from the resolver service: %w", err)
 	}
 	return result, nil
 }

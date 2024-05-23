@@ -1,9 +1,8 @@
-package provider
+package confidence
 
 import (
 	"encoding/json"
 	"errors"
-	"github.com/open-feature/go-sdk/openfeature"
 	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
@@ -161,22 +160,20 @@ func TestProcessResolveError(t *testing.T) {
 	t.Run("FlagNotFoundError", func(t *testing.T) {
 		res := processResolveError(errFlagNotFound, defaultValue)
 		assert.Equal(t, defaultValue, res.Value)
-		assert.IsType(t, openfeature.ResolutionError{}, res.ProviderResolutionDetail.ResolutionError)
 
-		resDetails := res.ProviderResolutionDetail.ResolutionDetail()
-		assert.Equal(t, openfeature.FlagNotFoundCode, resDetails.ErrorCode)
-		assert.Equal(t, openfeature.ErrorReason, resDetails.Reason)
+		resDetails := res.ResolutionDetail
+		assert.Equal(t, FlagNotFoundCode, resDetails.ErrorCode)
+		assert.Equal(t, ErrorReason, resDetails.Reason)
 	})
 
 	t.Run("GeneralError", func(t *testing.T) {
 		err := errors.New("unknown error")
 		res := processResolveError(err, defaultValue)
 		assert.Equal(t, defaultValue, res.Value)
-		assert.IsType(t, openfeature.ResolutionError{}, res.ProviderResolutionDetail.ResolutionError)
 
-		resDetails := res.ProviderResolutionDetail.ResolutionDetail()
-		assert.Equal(t, openfeature.GeneralCode, resDetails.ErrorCode)
-		assert.Equal(t, openfeature.ErrorReason, resDetails.Reason)
+		resDetails := res.ResolutionDetail
+		assert.Equal(t, GeneralCode, resDetails.ErrorCode)
+		assert.Equal(t, ErrorReason, resDetails.Reason)
 	})
 }
 
@@ -188,10 +185,10 @@ func TestProcessResolvedFlag(t *testing.T) {
 			FlagSchema: flagSchema{Schema: map[string]interface{}{}},
 		}
 
-		expected := openfeature.InterfaceResolutionDetail{
+		expected := InterfaceResolutionDetail{
 			Value: defaultValue,
-			ProviderResolutionDetail: openfeature.ProviderResolutionDetail{
-				Reason: openfeature.DefaultReason,
+			ResolutionDetail: ResolutionDetail{
+				Reason: DefaultReason,
 			},
 		}
 
@@ -205,12 +202,14 @@ func TestProcessResolvedFlag(t *testing.T) {
 			FlagSchema: flagSchema{Schema: map[string]interface{}{"key": "wrongType"}},
 		}
 
-		expected := openfeature.InterfaceResolutionDetail{
+		expected := InterfaceResolutionDetail{
 			Value: defaultValue,
-			ProviderResolutionDetail: openfeature.ProviderResolutionDetail{
-				ResolutionError: openfeature.NewTypeMismatchResolutionError(
-					"schema for property key does not match the expected type"),
-				Reason: openfeature.ErrorReason,
+			ResolutionDetail: ResolutionDetail{
+				Variant:      "",
+				Reason:       ErrorReason,
+				ErrorCode:    TypeMismatchCode,
+				ErrorMessage: "schema for property key does not match the expected type",
+				FlagMetadata: nil,
 			},
 		}
 
@@ -225,8 +224,13 @@ func TestProcessResolvedFlag(t *testing.T) {
 		}
 
 		expected := typeMismatchError(defaultValue)
-		expected.ProviderResolutionDetail.ResolutionError =
-			openfeature.NewTypeMismatchResolutionError("schema for property key.missing does not match the expected type")
+		expected.ResolutionDetail = ResolutionDetail{
+			Variant:      "",
+			Reason:       ErrorReason,
+			ErrorCode:    TypeMismatchCode,
+			ErrorMessage: "schema for property key.missing does not match the expected type",
+			FlagMetadata: nil,
+		}
 
 		assert.Equal(t, expected, processResolvedFlag(rf, defaultValue, reflect.String, "key.missing"))
 	})
@@ -238,10 +242,10 @@ func TestProcessResolvedFlag(t *testing.T) {
 			FlagSchema: flagSchema{Schema: map[string]interface{}{"key": map[string]interface{}{"stringSchema": "value"}}},
 		}
 
-		expected := openfeature.InterfaceResolutionDetail{
+		expected := InterfaceResolutionDetail{
 			Value: "value", // Success case excludes default value
-			ProviderResolutionDetail: openfeature.ProviderResolutionDetail{
-				Reason: openfeature.TargetingMatchReason,
+			ResolutionDetail: ResolutionDetail{
+				Reason: TargetingMatchReason,
 			},
 		}
 		assert.Equal(t, expected, processResolvedFlag(rf, defaultValue, reflect.String, "key"))
@@ -349,12 +353,14 @@ func TestReplaceNumbers(t *testing.T) {
 func TestTypeMismatchError(t *testing.T) {
 	t.Run("WithStringValue", func(t *testing.T) {
 		defaultValue := "my default value"
-		expected := openfeature.InterfaceResolutionDetail{
+		expected := InterfaceResolutionDetail{
 			Value: defaultValue,
-			ProviderResolutionDetail: openfeature.ProviderResolutionDetail{
-				ResolutionError: openfeature.NewTypeMismatchResolutionError(
-					"Unable to extract property value from resolve response"),
-				Reason: openfeature.ErrorReason,
+			ResolutionDetail: ResolutionDetail{
+				Variant:      "",
+				Reason:       ErrorReason,
+				ErrorCode:    TypeMismatchCode,
+				ErrorMessage: "Unable to extract property value from resolve response",
+				FlagMetadata: nil,
 			},
 		}
 
@@ -363,12 +369,14 @@ func TestTypeMismatchError(t *testing.T) {
 
 	t.Run("WithIntValue", func(t *testing.T) {
 		defaultValue := 123
-		expected := openfeature.InterfaceResolutionDetail{
+		expected := InterfaceResolutionDetail{
 			Value: defaultValue,
-			ProviderResolutionDetail: openfeature.ProviderResolutionDetail{
-				ResolutionError: openfeature.NewTypeMismatchResolutionError(
-					"Unable to extract property value from resolve response"),
-				Reason: openfeature.ErrorReason,
+			ResolutionDetail: ResolutionDetail{
+				Variant:      "",
+				Reason:       ErrorReason,
+				ErrorCode:    TypeMismatchCode,
+				ErrorMessage: "Unable to extract property value from resolve response",
+				FlagMetadata: nil,
 			},
 		}
 
@@ -380,58 +388,61 @@ func TestToBoolResolutionDetail(t *testing.T) {
 	defaultValue := false
 
 	t.Run("WhenValueIsBool", func(t *testing.T) {
-		res := openfeature.InterfaceResolutionDetail{
+		res := InterfaceResolutionDetail{
 			Value: true,
-			ProviderResolutionDetail: openfeature.ProviderResolutionDetail{
-				Reason: openfeature.TargetingMatchReason,
+			ResolutionDetail: ResolutionDetail{
+				Reason: TargetingMatchReason,
 			},
 		}
 
-		expected := openfeature.BoolResolutionDetail{
+		expected := BoolResolutionDetail{
 			Value: true,
-			ProviderResolutionDetail: openfeature.ProviderResolutionDetail{
-				Reason: openfeature.TargetingMatchReason,
+			ResolutionDetail: ResolutionDetail{
+				Reason: TargetingMatchReason,
 			},
 		}
 
-		assert.Equal(t, expected, toBoolResolutionDetail(res, defaultValue))
+		assert.Equal(t, expected, ToBoolResolutionDetail(res, defaultValue))
 	})
 
 	t.Run("WhenValueIsNotBool", func(t *testing.T) {
-		res := openfeature.InterfaceResolutionDetail{
+		res := InterfaceResolutionDetail{
 			Value: "not a bool",
-			ProviderResolutionDetail: openfeature.ProviderResolutionDetail{
-				Reason: openfeature.TargetingMatchReason,
+			ResolutionDetail: ResolutionDetail{
+				Reason: TargetingMatchReason,
 			},
 		}
 
-		expected := openfeature.BoolResolutionDetail{
+		expected := BoolResolutionDetail{
 			Value: defaultValue,
-			ProviderResolutionDetail: openfeature.ProviderResolutionDetail{
-				ResolutionError: openfeature.NewTypeMismatchResolutionError("Unable to convert response property to boolean"),
-				Reason:          openfeature.ErrorReason,
+			ResolutionDetail: ResolutionDetail{
+				Variant:      "",
+				Reason:       ErrorReason,
+				ErrorCode:    TypeMismatchCode,
+				ErrorMessage: "Unable to convert response property to boolean",
+				FlagMetadata: nil,
 			},
 		}
 
-		assert.Equal(t, expected, toBoolResolutionDetail(res, defaultValue))
+		assert.Equal(t, expected, ToBoolResolutionDetail(res, defaultValue))
 	})
 
 	t.Run("WhenReasonIsNotTargetingMatchReason", func(t *testing.T) {
-		res := openfeature.InterfaceResolutionDetail{
+		res := InterfaceResolutionDetail{
 			Value: true,
-			ProviderResolutionDetail: openfeature.ProviderResolutionDetail{
-				Reason: openfeature.ErrorReason,
+			ResolutionDetail: ResolutionDetail{
+				Reason: ErrorReason,
 			},
 		}
 
-		expected := openfeature.BoolResolutionDetail{
+		expected := BoolResolutionDetail{
 			Value: defaultValue,
-			ProviderResolutionDetail: openfeature.ProviderResolutionDetail{
-				Reason: openfeature.ErrorReason,
+			ResolutionDetail: ResolutionDetail{
+				Reason: ErrorReason,
 			},
 		}
 
-		assert.Equal(t, expected, toBoolResolutionDetail(res, defaultValue))
+		assert.Equal(t, expected, ToBoolResolutionDetail(res, defaultValue))
 	})
 }
 
@@ -439,58 +450,61 @@ func TestToStringResolutionDetail(t *testing.T) {
 	defaultValue := "default"
 
 	t.Run("WhenValueIsString", func(t *testing.T) {
-		res := openfeature.InterfaceResolutionDetail{
+		res := InterfaceResolutionDetail{
 			Value: "hello",
-			ProviderResolutionDetail: openfeature.ProviderResolutionDetail{
-				Reason: openfeature.TargetingMatchReason,
+			ResolutionDetail: ResolutionDetail{
+				Reason: TargetingMatchReason,
 			},
 		}
 
-		expected := openfeature.StringResolutionDetail{
+		expected := StringResolutionDetail{
 			Value: "hello",
-			ProviderResolutionDetail: openfeature.ProviderResolutionDetail{
-				Reason: openfeature.TargetingMatchReason,
+			ResolutionDetail: ResolutionDetail{
+				Reason: TargetingMatchReason,
 			},
 		}
 
-		assert.Equal(t, expected, toStringResolutionDetail(res, defaultValue))
+		assert.Equal(t, expected, ToStringResolutionDetail(res, defaultValue))
 	})
 
 	t.Run("WhenValueIsNotString", func(t *testing.T) {
-		res := openfeature.InterfaceResolutionDetail{
+		res := InterfaceResolutionDetail{
 			Value: 123,
-			ProviderResolutionDetail: openfeature.ProviderResolutionDetail{
-				Reason: openfeature.TargetingMatchReason,
+			ResolutionDetail: ResolutionDetail{
+				Reason: TargetingMatchReason,
 			},
 		}
 
-		expected := openfeature.StringResolutionDetail{
+		expected := StringResolutionDetail{
 			Value: defaultValue,
-			ProviderResolutionDetail: openfeature.ProviderResolutionDetail{
-				ResolutionError: openfeature.NewTypeMismatchResolutionError("Unable to convert response property to boolean"),
-				Reason:          openfeature.ErrorReason,
+			ResolutionDetail: ResolutionDetail{
+				Variant:      "",
+				Reason:       ErrorReason,
+				ErrorCode:    TypeMismatchCode,
+				ErrorMessage: "Unable to convert response property to boolean",
+				FlagMetadata: nil,
 			},
 		}
 
-		assert.Equal(t, expected, toStringResolutionDetail(res, defaultValue))
+		assert.Equal(t, expected, ToStringResolutionDetail(res, defaultValue))
 	})
 
 	t.Run("WhenReasonIsNotTargetingMatchReason", func(t *testing.T) {
-		res := openfeature.InterfaceResolutionDetail{
+		res := InterfaceResolutionDetail{
 			Value: "hello",
-			ProviderResolutionDetail: openfeature.ProviderResolutionDetail{
-				Reason: openfeature.ErrorReason,
+			ResolutionDetail: ResolutionDetail{
+				Reason: ErrorReason,
 			},
 		}
 
-		expected := openfeature.StringResolutionDetail{
+		expected := StringResolutionDetail{
 			Value: defaultValue,
-			ProviderResolutionDetail: openfeature.ProviderResolutionDetail{
-				Reason: openfeature.ErrorReason,
+			ResolutionDetail: ResolutionDetail{
+				Reason: ErrorReason,
 			},
 		}
 
-		assert.Equal(t, expected, toStringResolutionDetail(res, defaultValue))
+		assert.Equal(t, expected, ToStringResolutionDetail(res, defaultValue))
 	})
 }
 
@@ -498,115 +512,121 @@ func TestToFloatResolutionDetail(t *testing.T) {
 	defaultValue := 42.0
 
 	t.Run("WhenValueIsFloat", func(t *testing.T) {
-		res := openfeature.InterfaceResolutionDetail{
+		res := InterfaceResolutionDetail{
 			Value: 24.0,
-			ProviderResolutionDetail: openfeature.ProviderResolutionDetail{
-				Reason: openfeature.TargetingMatchReason,
+			ResolutionDetail: ResolutionDetail{
+				Reason: TargetingMatchReason,
 			},
 		}
 
-		expected := openfeature.FloatResolutionDetail{
+		expected := FloatResolutionDetail{
 			Value: 24.0,
-			ProviderResolutionDetail: openfeature.ProviderResolutionDetail{
-				Reason: openfeature.TargetingMatchReason,
+			ResolutionDetail: ResolutionDetail{
+				Reason: TargetingMatchReason,
 			},
 		}
 
-		assert.Equal(t, expected, toFloatResolutionDetail(res, defaultValue))
+		assert.Equal(t, expected, ToFloatResolutionDetail(res, defaultValue))
 	})
 
 	t.Run("WhenValueIsNotFloat", func(t *testing.T) {
-		res := openfeature.InterfaceResolutionDetail{
+		res := InterfaceResolutionDetail{
 			Value: "not a float",
-			ProviderResolutionDetail: openfeature.ProviderResolutionDetail{
-				Reason: openfeature.TargetingMatchReason,
+			ResolutionDetail: ResolutionDetail{
+				Reason: TargetingMatchReason,
 			},
 		}
 
-		expected := openfeature.FloatResolutionDetail{
+		expected := FloatResolutionDetail{
 			Value: defaultValue,
-			ProviderResolutionDetail: openfeature.ProviderResolutionDetail{
-				ResolutionError: openfeature.NewTypeMismatchResolutionError("Unable to convert response property to float"),
-				Reason:          openfeature.ErrorReason,
+			ResolutionDetail: ResolutionDetail{
+				Variant:      "",
+				Reason:       ErrorReason,
+				ErrorCode:    TypeMismatchCode,
+				ErrorMessage: "Unable to convert response property to float",
+				FlagMetadata: nil,
 			},
 		}
 
-		assert.Equal(t, expected, toFloatResolutionDetail(res, defaultValue))
+		assert.Equal(t, expected, ToFloatResolutionDetail(res, defaultValue))
 	})
 
 	t.Run("WhenReasonIsNotTargetingMatchReason", func(t *testing.T) {
-		res := openfeature.InterfaceResolutionDetail{
+		res := InterfaceResolutionDetail{
 			Value: 24.0,
-			ProviderResolutionDetail: openfeature.ProviderResolutionDetail{
-				Reason: openfeature.ErrorReason,
+			ResolutionDetail: ResolutionDetail{
+				Reason: ErrorReason,
 			},
 		}
 
-		expected := openfeature.FloatResolutionDetail{
+		expected := FloatResolutionDetail{
 			Value: defaultValue,
-			ProviderResolutionDetail: openfeature.ProviderResolutionDetail{
-				Reason: openfeature.ErrorReason,
+			ResolutionDetail: ResolutionDetail{
+				Reason: ErrorReason,
 			},
 		}
 
-		assert.Equal(t, expected, toFloatResolutionDetail(res, defaultValue))
+		assert.Equal(t, expected, ToFloatResolutionDetail(res, defaultValue))
 	})
 }
 
 func TestToIntResolutionDetail(t *testing.T) {
 	defaultValue := int64(123)
 	t.Run("WhenValueIsInt", func(t *testing.T) {
-		res := openfeature.InterfaceResolutionDetail{
+		res := InterfaceResolutionDetail{
 			Value: int64(456),
-			ProviderResolutionDetail: openfeature.ProviderResolutionDetail{
-				Reason: openfeature.TargetingMatchReason,
+			ResolutionDetail: ResolutionDetail{
+				Reason: TargetingMatchReason,
 			},
 		}
 
-		expected := openfeature.IntResolutionDetail{
+		expected := IntResolutionDetail{
 			Value: int64(456),
-			ProviderResolutionDetail: openfeature.ProviderResolutionDetail{
-				Reason: openfeature.TargetingMatchReason,
+			ResolutionDetail: ResolutionDetail{
+				Reason: TargetingMatchReason,
 			},
 		}
 
-		assert.Equal(t, expected, toIntResolutionDetail(res, defaultValue))
+		assert.Equal(t, expected, ToIntResolutionDetail(res, defaultValue))
 	})
 
 	t.Run("WhenValueIsNotInt", func(t *testing.T) {
-		res := openfeature.InterfaceResolutionDetail{
+		res := InterfaceResolutionDetail{
 			Value: "not an int",
-			ProviderResolutionDetail: openfeature.ProviderResolutionDetail{
-				Reason: openfeature.TargetingMatchReason,
+			ResolutionDetail: ResolutionDetail{
+				Reason: TargetingMatchReason,
 			},
 		}
 
-		expected := openfeature.IntResolutionDetail{
+		expected := IntResolutionDetail{
 			Value: defaultValue,
-			ProviderResolutionDetail: openfeature.ProviderResolutionDetail{
-				ResolutionError: openfeature.NewTypeMismatchResolutionError("Unable to convert response property to int"),
-				Reason:          openfeature.ErrorReason,
+			ResolutionDetail: ResolutionDetail{
+				Variant:      "",
+				Reason:       ErrorReason,
+				ErrorCode:    TypeMismatchCode,
+				ErrorMessage: "Unable to convert response property to int",
+				FlagMetadata: nil,
 			},
 		}
 
-		assert.Equal(t, expected, toIntResolutionDetail(res, defaultValue))
+		assert.Equal(t, expected, ToIntResolutionDetail(res, defaultValue))
 	})
 
 	t.Run("WhenReasonIsNotTargetingMatchReason", func(t *testing.T) {
-		res := openfeature.InterfaceResolutionDetail{
+		res := InterfaceResolutionDetail{
 			Value: int64(456),
-			ProviderResolutionDetail: openfeature.ProviderResolutionDetail{
-				Reason: openfeature.ErrorReason,
+			ResolutionDetail: ResolutionDetail{
+				Reason: ErrorReason,
 			},
 		}
 
-		expected := openfeature.IntResolutionDetail{
+		expected := IntResolutionDetail{
 			Value: defaultValue,
-			ProviderResolutionDetail: openfeature.ProviderResolutionDetail{
-				Reason: openfeature.ErrorReason,
+			ResolutionDetail: ResolutionDetail{
+				Reason: ErrorReason,
 			},
 		}
 
-		assert.Equal(t, expected, toIntResolutionDetail(res, defaultValue))
+		assert.Equal(t, expected, ToIntResolutionDetail(res, defaultValue))
 	})
 }
