@@ -44,9 +44,6 @@ jobs:
           if [ -n "$fmt_issues" ]; then
             echo "The following files are not properly formatted:"
             echo "$fmt_issues"
-            cat <<EOF
-            Please run 'gofmt -w .'
-            in the respective module directories to format your code.
-            EOF
+            echo "Please run 'gofmt -w .' in the respective module directories to format your code."
             exit 1
           fi
