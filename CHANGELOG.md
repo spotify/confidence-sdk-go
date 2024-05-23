@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2.0](https://github.com/spotify/confidence-openfeature-provider-go/compare/v0.1.8...v0.2.0) (2024-05-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* Total confidence ([#48](https://github.com/spotify/confidence-openfeature-provider-go/issues/48))
+
+### ✨ New Features
+
+* Total confidence ([#48](https://github.com/spotify/confidence-openfeature-provider-go/issues/48)) ([51cb84e](https://github.com/spotify/confidence-openfeature-provider-go/commit/51cb84e9873df60460a7085f64650ca854feab3d))
+
 ## [0.1.8](https://github.com/spotify/confidence-openfeature-provider-go/compare/v0.1.7...v0.1.8) (2024-02-15)
 
 
