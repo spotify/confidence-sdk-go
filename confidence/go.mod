@@ -1,4 +1,4 @@
-module github.com/spotify/confidence-openfeature-provider-go/confidence
+module github.com/spotify/confidence-sdk-go/confidence
 
 go 1.19
 

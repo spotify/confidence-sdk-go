@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/open-feature/go-sdk/openfeature"
-	confidence "github.com/spotify/confidence-openfeature-provider-go/confidence"
+	confidence "github.com/spotify/confidence-sdk-go/confidence"
 	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
