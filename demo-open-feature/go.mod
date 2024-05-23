@@ -9,9 +9,9 @@ require (
 	github.com/spotify/confidence-openfeature-provider-go/provider v0.1.7
 )
 
-replace github.com/spotify/confidence-openfeature-provider-go/provider v0.1.7 => github.com/spotify/confidence-openfeature-provider-go/provider v0.0.0-20240522103449-d3e86fdf3eab
+replace github.com/spotify/confidence-openfeature-provider-go/provider v0.1.7 => ../provider
 
-replace github.com/spotify/confidence-openfeature-provider-go/confidence v1.0.0 => github.com/spotify/confidence-openfeature-provider-go/confidence v0.0.0-20240522103449-d3e86fdf3eab
+replace github.com/spotify/confidence-openfeature-provider-go/confidence v1.0.0 => ../confidence
 
 require (
 	github.com/go-logr/logr v1.4.1 // indirect
