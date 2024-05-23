@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/spotify/confidence-sdk-go/compare/v0.2.0...v0.2.1) (2024-05-23)
+
+
+### 🔄 Refactoring
+
+* rename repo ([#51](https://github.com/spotify/confidence-sdk-go/issues/51)) ([c59b297](https://github.com/spotify/confidence-sdk-go/commit/c59b297504e52c20bb48e87a502f98aae49f527b))
+
 ## [0.2.0](https://github.com/spotify/confidence-openfeature-provider-go/compare/v0.1.8...v0.2.0) (2024-05-23)
 
 
