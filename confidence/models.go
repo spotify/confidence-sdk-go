@@ -110,16 +110,16 @@ type ResolveClient interface {
 var errFlagNotFound = errors.New("flag not found")
 
 type EventBatchRequest struct {
-	CclientSecret string      `json:"clientSecret"`
-	Sdk 				 sdk          `json:"sdk"`
-	SendTime     string       `json:"sendTime"`
-	Events       []Event      `json:"events"`
+	CclientSecret string  `json:"clientSecret"`
+	Sdk           sdk     `json:"sdk"`
+	SendTime      string  `json:"sendTime"`
+	Events        []Event `json:"events"`
 }
 
 type Event struct {
-	EventDefinition    string    									`json:"eventDefinition"`
-	EventTime          string      								`json:"eventTime"`
-	Payload            map[string]interface{}			`json:"payload"`
+	EventDefinition string                 `json:"eventDefinition"`
+	EventTime       string                 `json:"eventTime"`
+	Payload         map[string]interface{} `json:"payload"`
 }
 
 type ResolveRequest struct {

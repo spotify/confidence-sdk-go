@@ -17,7 +17,7 @@ func (e EventUploader) upload(ctx context.Context, request EventBatchRequest) {
 	if err != nil {
 		return
 	}
-	
+
 	payload := bytes.NewBuffer(jsonRequest)
 	req, err := http.NewRequestWithContext(ctx,
 		http.MethodPost, "https://events.eu.confidence.dev/v1/events:publish", payload)

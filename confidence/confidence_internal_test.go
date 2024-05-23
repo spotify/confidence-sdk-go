@@ -4,10 +4,10 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"reflect"
 	"fmt"
-	"testing"
 	"github.com/stretchr/testify/assert"
+	"reflect"
+	"testing"
 )
 
 type MockResolveClient struct {

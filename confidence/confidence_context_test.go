@@ -20,7 +20,6 @@ func TestWithContextIsInChildContext(t *testing.T) {
 	assert.Equal(t, child.GetContext(), map[string]interface{}{"hello": "hey", "west": "world", "hello2": "hey2"})
 }
 
-
 func TestChildContextOverrideParentContext(t *testing.T) {
 	client := create_confidence(t, templateResponse())
 	client.PutContext("hello", "hey")
@@ -40,4 +39,3 @@ func create_confidence(t *testing.T, response ResolveResponse) *Confidence {
 		contextMap:    make(map[string]interface{}),
 	}
 }
-

@@ -31,7 +31,6 @@ func main() {
 		fmt.Println(colorRed, "Message --> "+messageValue)
 	}
 
-
 	wg := confidence.Track(context.Background(), "page-viewed", map[string]interface{}{})
 	wg.Wait()
 	fmt.Println("Event sent")

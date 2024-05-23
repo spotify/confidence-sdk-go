@@ -3,11 +3,11 @@ package confidence
 import (
 	"context"
 	"fmt"
-	"sync"
-	"time"
 	"net/http"
 	"reflect"
 	"strings"
+	"sync"
+	"time"
 )
 
 type FlagResolver interface {
@@ -38,7 +38,7 @@ func (e Confidence) GetContext() map[string]interface{} {
 	if e.parent != nil {
 		parentMap = e.parent.GetContext()
 	}
-for key, value := range parentMap {
+	for key, value := range parentMap {
 		currentMap[key] = value
 	}
 	for key, value := range e.contextMap {
@@ -91,7 +91,7 @@ func (e Confidence) Track(ctx context.Context, eventName string, message map[str
 	go func() {
 		currentTime := time.Now()
 		iso8601Time := currentTime.Format(time.RFC3339)
-		event := Event {
+		event := Event{
 			EventDefinition: fmt.Sprintf("eventDefinitions/%s", eventName),
 			EventTime:       iso8601Time,
 			Payload:         newMap,

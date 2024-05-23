@@ -43,8 +43,6 @@ func (e FlagProvider) StringEvaluation(ctx context.Context, flag string, default
 	}
 }
 
-
-
 func (e FlagProvider) FloatEvaluation(ctx context.Context, flag string, defaultValue float64,
 	evalCtx openfeature.FlattenedContext) openfeature.FloatResolutionDetail {
 	confidence := e.confidence.WithContext(processTargetingKey(evalCtx))
