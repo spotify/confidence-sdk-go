@@ -11,7 +11,7 @@ and get familiar with the concepts.
 <!---x-release-please-start-version-->
 ```
 require (
-	github.com/spotify/confidence-openfeature-provider-go v0.2.0
+	github.com/spotify/confidence-sdk-go v0.2.0
 )
 ```
 <!---x-release-please-end-->
@@ -40,7 +40,7 @@ The flag's schema is validated against the requested data type, and if it doesn'
 ```go
 import (
     "github.com/open-feature/go-sdk/openfeature"
-    confidence "github.com/spotify/confidence-openfeature-provider-go/pkg/provider"
+    confidence "github.com/spotify/confidence-sdk-go/pkg/provider"
 )
 
 provider, err := confidence.NewFlagProvider(confidence.NewAPIConfig("clientSecret"))

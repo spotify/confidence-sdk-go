@@ -6,8 +6,8 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/open-feature/go-sdk/openfeature"
-	c "github.com/spotify/confidence-openfeature-provider-go/confidence"
-	p "github.com/spotify/confidence-openfeature-provider-go/provider"
+	c "github.com/spotify/confidence-sdk-go/confidence"
+	p "github.com/spotify/confidence-sdk-go/provider"
 )
 
 func main() {

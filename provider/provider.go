@@ -3,7 +3,7 @@ package provider
 import (
 	"context"
 	"github.com/open-feature/go-sdk/openfeature"
-	c "github.com/spotify/confidence-openfeature-provider-go/confidence"
+	c "github.com/spotify/confidence-sdk-go/confidence"
 	"reflect"
 )
 

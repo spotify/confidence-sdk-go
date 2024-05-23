@@ -1,12 +1,12 @@
-module github.com/spotify/confidence-openfeature-provider-go/provider
+module github.com/spotify/confidence-sdk-go/provider
 
 go 1.19
 
-replace github.com/spotify/confidence-openfeature-provider-go/confidence v1.0.0 => ../confidence
+replace github.com/spotify/confidence-sdk-go/confidence v1.0.0 => ../confidence
 
 require (
 	github.com/open-feature/go-sdk v1.10.0
-	github.com/spotify/confidence-openfeature-provider-go/confidence v1.0.0
+	github.com/spotify/confidence-sdk-go/confidence v1.0.0
 	github.com/stretchr/testify v1.9.0
 )
 

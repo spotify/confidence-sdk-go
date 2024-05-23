@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	c "github.com/spotify/confidence-openfeature-provider-go/confidence"
+	c "github.com/spotify/confidence-sdk-go/confidence"
 )
 
 func main() {
