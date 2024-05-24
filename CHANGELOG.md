@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/spotify/confidence-sdk-go/compare/v0.2.1...v0.2.2) (2024-05-24)
+
+
+### 🐛 Bug Fixes
+
+* Change structure of pkgs ([#54](https://github.com/spotify/confidence-sdk-go/issues/54)) ([a42a693](https://github.com/spotify/confidence-sdk-go/commit/a42a6938737f0371de7513f4de3ffeeaa4277a91))
+
 ## [0.2.1](https://github.com/spotify/confidence-sdk-go/compare/v0.2.0...v0.2.1) (2024-05-23)
 
 
