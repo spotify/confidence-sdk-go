@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	c "github.com/spotify/confidence-sdk-go/confidence"
+	c "github.com/spotify/confidence-sdk-go/pkg/confidence"
 )
 
 func main() {
