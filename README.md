@@ -11,7 +11,7 @@ and get familiar with the concepts.
 <!---x-release-please-start-version-->
 ```
 require (
-	github.com/spotify/confidence-sdk-go v0.2.1
+	github.com/spotify/confidence-sdk-go v0.2.2
 )
 ```
 <!---x-release-please-end-->
