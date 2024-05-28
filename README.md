@@ -39,15 +39,14 @@ The flag's schema is validated against the requested data type, and if it doesn'
 
 ```go
 import (
-    "github.com/open-feature/go-sdk/openfeature"
-    confidence "github.com/spotify/confidence-sdk-go/pkg/provider"
+    openfeature "github.com/open-feature/go-sdk/openfeature"
+    confidence "github.com/spotify/confidence-sdk-go/pkg/confidence"
+    provider "github.com/spotify/confidence-sdk-go/pkg/provider"
 )
 
-provider, err := confidence.NewFlagProvider(confidence.NewAPIConfig("clientSecret"))
+confidence := confidence.NewConfidenceBuilder().SetAPIConfig(confidence.APIConfig{APIKey: "clientSecret"}).Build()
+provider := provider.NewFlagProvider(confidence)
 
-if err != nil {
-    // handle error	
-}
 
 openfeature.SetProvider(provider)
 client := openfeature.NewClient("testApp")
