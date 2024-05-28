@@ -39,17 +39,17 @@ The flag's schema is validated against the requested data type, and if it doesn'
 
 ```go
 import (
-    openfeature "github.com/open-feature/go-sdk/openfeature"
-    confidence "github.com/spotify/confidence-sdk-go/pkg/confidence"
-    provider "github.com/spotify/confidence-sdk-go/pkg/provider"
+    o "github.com/open-feature/go-sdk/openfeature"
+    c "github.com/spotify/confidence-sdk-go/pkg/confidence"
+    p "github.com/spotify/confidence-sdk-go/pkg/provider"
 )
 
-confidence := confidence.NewConfidenceBuilder().SetAPIConfig(confidence.APIConfig{APIKey: "clientSecret"}).Build()
-provider := provider.NewFlagProvider(confidence)
+confidenceSdk := c.NewConfidenceBuilder().SetAPIConfig(c.APIConfig{APIKey: "clientSecret"}).Build()
+confidenceProvider := p.NewFlagProvider(confidenceSdk)
 
 
-openfeature.SetProvider(provider)
-client := openfeature.NewClient("testApp")
+o.SetProvider(confidenceProvider)
+client := o.NewClient("testApp")
 	
 attributes := make(map[string]interface{})
 attributes["country"] = "SE"
@@ -57,7 +57,7 @@ attributes["plan"] = "premium"
 attributes["user_id"] = "user1"
 
 boolValue, error := client.BooleanValue(context.Background(), "test-flag.boolean-key", false, 
-	openfeature.NewEvaluationContext("", attributes))
+	o.NewEvaluationContext("", attributes))
 ```
 ## Demo app
 
