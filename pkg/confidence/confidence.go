@@ -26,7 +26,7 @@ var (
 
 type Confidence struct {
 	parent        ContextProvider
-	uploader      EventUploader
+	EventUploader      EventUploader
 	contextMap    map[string]interface{}
 	Config        APIConfig
 	ResolveClient ResolveClient
@@ -69,6 +69,10 @@ func (e ConfidenceBuilder) Build() Confidence {
 	if e.confidence.ResolveClient == nil {
 		e.confidence.ResolveClient = HttpResolveClient{Client: &http.Client{}, Config: e.confidence.Config}
 	}
+	if e.confidence.EventUploader == nil {
+		e.confidence.EventUploader = HttpEventUploader{Client: &http.Client{}, Config: e.confidence.Config}
+	}
+
 	e.confidence.contextMap = make(map[string]interface{})
 	return e.confidence
 }
@@ -110,7 +114,7 @@ func (e Confidence) Track(ctx context.Context, eventName string, data map[string
 			SendTime:      iso8601Time,
 			Events:        []Event{event},
 		}
-		e.uploader.upload(ctx, batch)
+		e.EventUploader.upload(ctx, batch)
 		wg.Done()
 	}()
 	return &wg
