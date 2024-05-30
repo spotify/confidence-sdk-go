@@ -1,16 +1,16 @@
 package confidence
 
 import (
-  "context"
-  "reflect"
-  "testing"
+	"context"
+	"reflect"
+	"testing"
 
-  "github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/assert"
 )
 
 type MockEventUploader struct {
 	expectedContext map[string]interface{}
-	TestingT       *testing.T
+	TestingT        *testing.T
 }
 
 // helper function to check if a function panics
@@ -48,7 +48,7 @@ func TestContextExistsInDataAndPanic(t *testing.T) {
 	assert.Panics(t, func() {
 		wg := client.Track(context.Background(), "test", map[string]interface{}{"context": "hey"})
 		wg.Wait()
-  })
+	})
 }
 
 func TestContextDoesNotExistInDataAndDoesNotPanic(t *testing.T) {
@@ -60,7 +60,7 @@ func TestContextDoesNotExistInDataAndDoesNotPanic(t *testing.T) {
 	assert.NotPanics(t, func() {
 		wg := client.Track(context.Background(), "test", map[string]interface{}{"not_context": "hey"})
 		wg.Wait()
-})
+	})
 }
 
 func TestContextIsInConfidenceObject(t *testing.T) {

@@ -26,7 +26,7 @@ var (
 
 type Confidence struct {
 	parent        ContextProvider
-	EventUploader      EventUploader
+	EventUploader EventUploader
 	contextMap    map[string]interface{}
 	Config        APIConfig
 	ResolveClient ResolveClient
