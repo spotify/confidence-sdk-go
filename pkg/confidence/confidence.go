@@ -83,10 +83,14 @@ func (e Confidence) PutContext(key string, value interface{}) {
 	e.contextMap[key] = value
 }
 
-func (e Confidence) Track(ctx context.Context, eventName string, message map[string]interface{}) *sync.WaitGroup {
-	newMap := e.GetContext()
+func (e Confidence) Track(ctx context.Context, eventName string, data map[string]interface{}) *sync.WaitGroup {
+	newMap := make(map[string]interface{})
+	newMap["context"] = e.GetContext()
 
-	for key, value := range message {
+	for key, value := range data {
+		if key == "context" {
+			panic("invalid key \"context\" inside the data")
+		}
 		newMap[key] = value
 	}
 
