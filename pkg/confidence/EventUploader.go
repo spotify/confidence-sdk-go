@@ -7,12 +7,16 @@ import (
 	"net/http"
 )
 
-type EventUploader struct {
-	client http.Client
-	config APIConfig
+type EventUploader interface {
+	upload(ctx context.Context, request EventBatchRequest)
 }
 
-func (e EventUploader) upload(ctx context.Context, request EventBatchRequest) {
+type HttpEventUploader struct {
+	Client *http.Client
+	Config APIConfig
+}
+
+func (e HttpEventUploader) upload(ctx context.Context, request EventBatchRequest) {
 	jsonRequest, err := json.Marshal(request)
 	if err != nil {
 		return
@@ -25,7 +29,7 @@ func (e EventUploader) upload(ctx context.Context, request EventBatchRequest) {
 		return
 	}
 
-	resp, err := e.client.Do(req)
+	resp, err := e.Client.Do(req)
 	if err != nil {
 		return
 	}

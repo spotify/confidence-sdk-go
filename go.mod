@@ -4,8 +4,8 @@ go 1.19
 
 require (
 	github.com/open-feature/go-sdk v1.10.0
-	github.com/spotify/confidence-sdk-go/confidence v0.0.0-20240523131533-2f6be28355f0
 	github.com/stretchr/testify v1.9.0
+	golang.org/x/text v0.14.0
 )
 
 require (
