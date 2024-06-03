@@ -63,7 +63,7 @@ func TestResolveObjectValue(t *testing.T) {
 	client := client(t, templateResponse(), nil)
 	client.PutContext("targeting_key", "user1")
 
-	evalDetails := client.GetObjectFlag(context.Background(), "test-flag.struct-key", "default")
+	evalDetails := client.GetObjectFlag(context.Background(), "test-flag.struct-key", map[string]interface{}{})
 	_, ok := evalDetails.Value.(map[string]interface{})
 	assert.True(t, ok)
 }
@@ -88,7 +88,7 @@ func TestResolveWholeFlagAsObject(t *testing.T) {
 	client := client(t, templateResponse(), nil)
 	client.PutContext("targeting_key", "user1")
 
-	evalDetails := client.GetObjectFlag(context.Background(), "test-flag", "default")
+	evalDetails := client.GetObjectFlag(context.Background(), "test-flag", map[string]interface{}{})
 	_, ok := evalDetails.Value.(map[string]interface{})
 	assert.True(t, ok)
 }
@@ -97,7 +97,7 @@ func TestResolveWholeFlagAsObjectWithInts(t *testing.T) {
 	client := client(t, templateResponse(), nil)
 	client.PutContext("targeting_key", "user1")
 
-	evalDetails := client.GetObjectFlag(context.Background(), "test-flag", "default")
+	evalDetails := client.GetObjectFlag(context.Background(), "test-flag", map[string]interface{}{})
 
 	value, _ := evalDetails.Value.(map[string]interface{})
 	rootIntValue := value["integer-key"]

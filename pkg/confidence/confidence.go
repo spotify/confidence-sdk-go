@@ -174,12 +174,12 @@ func (e Confidence) GetStringValue(ctx context.Context, flag string, defaultValu
 	return e.GetStringFlag(ctx, flag, defaultValue).Value
 }
 
-func (e Confidence) GetObjectFlag(ctx context.Context, flag string, defaultValue string) InterfaceResolutionDetail {
+func (e Confidence) GetObjectFlag(ctx context.Context, flag string, defaultValue map[string]interface{}) InterfaceResolutionDetail {
 	resp := e.ResolveFlag(ctx, flag, defaultValue, reflect.Map)
 	return resp
 }
 
-func (e Confidence) GetObjectValue(ctx context.Context, flag string, defaultValue string) interface{} {
+func (e Confidence) GetObjectValue(ctx context.Context, flag string, defaultValue map[string]interface{}) interface{} {
 	return e.GetObjectFlag(ctx, flag, defaultValue).Value
 }
 
