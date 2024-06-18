@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.2.3](https://github.com/spotify/confidence-sdk-go/compare/v0.2.2...v0.2.3) (2024-06-18)
+
+
+### 🐛 Bug Fixes
+
+* Context structure ([#59](https://github.com/spotify/confidence-sdk-go/issues/59)) ([d56de80](https://github.com/spotify/confidence-sdk-go/commit/d56de80f6d81273b384f4761ada458c55017c948))
+* default type should be a map ([#60](https://github.com/spotify/confidence-sdk-go/issues/60)) ([23ed8ad](https://github.com/spotify/confidence-sdk-go/commit/23ed8ad7e272c4d62459854763213946a68f6034))
+
+
+### 📚 Documentation
+
+* fixup docs with correct imports ([#57](https://github.com/spotify/confidence-sdk-go/issues/57)) ([a2047c9](https://github.com/spotify/confidence-sdk-go/commit/a2047c98b7c19d6b202add4e152fb41a19de8d78))
+
 ## [0.2.2](https://github.com/spotify/confidence-sdk-go/compare/v0.2.1...v0.2.2) (2024-05-24)
 
 
