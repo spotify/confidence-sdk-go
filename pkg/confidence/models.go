@@ -57,20 +57,20 @@ func NewGeneralResolutionError(msg string) ResolutionError {
 }
 
 type APIConfig struct {
-	APIKey string
+	APIKey        string
 	APIResolveUrl string
 }
 
 func NewAPIConfig(apiKey string) *APIConfig {
 	return &APIConfig{
-		APIKey: apiKey,
+		APIKey:        apiKey,
 		APIResolveUrl: "https://resolver.confidence.dev",
 	}
 }
 
 func NewAPIConfigWithUrl(apiKey, apiResolveUrl string) *APIConfig {
 	return &APIConfig{
-		APIKey: apiKey,
+		APIKey:        apiKey,
 		APIResolveUrl: apiResolveUrl,
 	}
 }
