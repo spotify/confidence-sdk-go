@@ -6,6 +6,8 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/spotify/confidence-sdk-go v0.2.2-0.20240523155258-4bbc177010cc h1:CyQdom204c6w4UjbT63Otk3axZff4mEbeVDF/snvfas=
 github.com/spotify/confidence-sdk-go v0.2.2-0.20240523155258-4bbc177010cc/go.mod h1:TYBqx3F0AZO7HZF8Nkf2dWnvVHH91ICo0W6e9wmLsk4=
+github.com/spotify/confidence-sdk-go v0.2.3 h1:vJJjWJo6qgpgX+Lg/uiWrtzRw+qaJhwIQRkxwrBJUCA=
+github.com/spotify/confidence-sdk-go v0.2.3/go.mod h1:3MInYY3UiHaNToPlL0mTgbWjcwMMGV/4OfbWAiJ2JC0=
 github.com/stretchr/testify v1.9.0 h1:HtqpIVDClZ4nwg75+f6Lvsy/wHu+3BoSGCbBAcpTsTg=
 github.com/stretchr/testify v1.9.0/go.mod h1:r2ic/lqez/lEtzL7wO/rwa5dbSLXVDPFyf8C91i36aY=
 golang.org/x/exp v0.0.0-20240213143201-ec583247a57a/go.mod h1:CxmFvTBINI24O/j8iY7H1xHzx2i4OsyguNBmN/uPtqc=
