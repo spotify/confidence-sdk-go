@@ -250,7 +250,6 @@ func emptyResponse() ResolveResponse {
 func newConfidence(apiKey string, client ResolveClient) *Confidence {
 	config := APIConfig{
 		APIKey: apiKey,
-		Region: APIRegionGlobal,
 	}
 	return &Confidence{
 		Config:        config,

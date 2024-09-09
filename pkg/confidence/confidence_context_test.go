@@ -97,7 +97,6 @@ func TestChildContextRemoveParentContext(t *testing.T) {
 func create_confidence(t *testing.T, response ResolveResponse) *Confidence {
 	config := APIConfig{
 		APIKey: "apiKey",
-		Region: APIRegionGlobal,
 	}
 	return &Confidence{
 		Config:        config,
@@ -109,7 +108,6 @@ func create_confidence(t *testing.T, response ResolveResponse) *Confidence {
 func createConfidenceWithUploader(t *testing.T, response ResolveResponse, uploader MockEventUploader) *Confidence {
 	config := APIConfig{
 		APIKey: "apiKey",
-		Region: APIRegionGlobal,
 	}
 	return &Confidence{
 		Config:        config,

@@ -34,7 +34,7 @@ func (client HttpResolveClient) SendResolveRequest(ctx context.Context,
 
 	payload := bytes.NewBuffer(jsonRequest)
 	req, err := http.NewRequestWithContext(ctx,
-		http.MethodPost, fmt.Sprintf("%s/flags:resolve", client.Config.Region.apiURL()), payload)
+		http.MethodPost, fmt.Sprintf("%s/flags:resolve", client.Config.APIResolveUrl), payload)
 	if err != nil {
 		return ResolveResponse{}, err
 	}
