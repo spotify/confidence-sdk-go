@@ -9,7 +9,7 @@ import (
 func main() {
 	fmt.Println("Fetching the flags...")
 
-	confidence := c.NewConfidenceBuilder().SetAPIConfig(c.APIConfig{APIKey: "API_KEY"}).Build()
+	confidence := c.NewConfidenceBuilder().SetAPIConfig(*c.NewAPIConfig("API_KEY")).Build()
 	targetingKey := "Random_targeting_key"
 	confidence.PutContext("targeting_key", targetingKey)
 
@@ -34,5 +34,4 @@ func main() {
 	wg := confidence.Track(context.Background(), "page-viewed", map[string]interface{}{})
 	wg.Wait()
 	fmt.Println("Event sent")
-
 }

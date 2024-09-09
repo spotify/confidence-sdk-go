@@ -64,7 +64,14 @@ type APIConfig struct {
 func NewAPIConfig(apiKey string) *APIConfig {
 	return &APIConfig{
 		APIKey: apiKey,
-		APIResolveUrl: "https://resolver.confidence.dev/v1",
+		APIResolveUrl: "https://resolver.confidence.dev",
+	}
+}
+
+func NewAPIConfigWithUrl(apiKey, apiResolveUrl string) *APIConfig {
+	return &APIConfig{
+		APIKey: apiKey,
+		APIResolveUrl: apiResolveUrl,
 	}
 }
 
