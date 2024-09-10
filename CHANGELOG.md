@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.3.0](https://github.com/spotify/confidence-sdk-go/compare/v0.2.3...v0.3.0) (2024-09-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* Add custom baseURL config for resolve ([#62](https://github.com/spotify/confidence-sdk-go/issues/62))
+
+### ✨ New Features
+
+* Add custom baseURL config for resolve ([#62](https://github.com/spotify/confidence-sdk-go/issues/62)) ([782cdca](https://github.com/spotify/confidence-sdk-go/commit/782cdca24466ce6a54bdd68c869a464daf52a72a))
+
 ## [0.2.3](https://github.com/spotify/confidence-sdk-go/compare/v0.2.2...v0.2.3) (2024-06-18)
 
 
