@@ -5,8 +5,6 @@ import (
 	"errors"
 )
 
-type APIRegion int64
-
 func NewFlagNotFoundResolutionError(msg string) ResolutionError {
 	return ResolutionError{
 		code:    FlagNotFoundCode,
@@ -58,47 +56,30 @@ func NewGeneralResolutionError(msg string) ResolutionError {
 	}
 }
 
+const DefaultAPIResolveBaseUrl = "https://resolver.confidence.dev"
+
 type APIConfig struct {
-	APIKey string
-	Region APIRegion
+	APIKey            string
+	APIResolveBaseUrl string
 }
 
 func NewAPIConfig(apiKey string) *APIConfig {
 	return &APIConfig{
-		APIKey: apiKey,
-		Region: APIRegionGlobal,
+		APIKey:            apiKey,
+		APIResolveBaseUrl: DefaultAPIResolveBaseUrl,
 	}
 }
 
-const (
-	APIRegionEU     = iota
-	APIRegionUS     = iota
-	APIRegionGlobal = iota
-)
-
-// Private types below
-
-const euAPIURL = "https://resolver.eu.confidence.dev/v1"
-const usAPIURL = "https://resolver.us.confidence.dev/v1"
-const globalAPIURL = "https://resolver.confidence.dev/v1"
-
-func (r APIRegion) apiURL() string {
-	if r == APIRegionEU {
-		return euAPIURL
-	} else if r == APIRegionUS {
-		return usAPIURL
-	} else if r == APIRegionGlobal {
-		return globalAPIURL
+func NewAPIConfigWithUrl(apiKey, APIResolveBaseUrl string) *APIConfig {
+	return &APIConfig{
+		APIKey:            apiKey,
+		APIResolveBaseUrl: APIResolveBaseUrl,
 	}
-	return ""
 }
 
 func (c APIConfig) Validate() error {
 	if c.APIKey == "" {
 		return errors.New("api key needs to be set")
-	}
-	if c.Region.apiURL() == "" {
-		return errors.New("api region needs to be set")
 	}
 	return nil
 }

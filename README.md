@@ -25,8 +25,10 @@ require (
 ### Creating and using the flag provider
 
 Below is an example for how to create a OpenFeature client using the Confidence flag provider, and then resolve
-a flag with a boolean attribute. The provider is configured with an api key and a region, which will determine
-where it will send the resolving requests. 
+a flag with a boolean attribute.
+
+The provider is configured via `NewAPIConfig(...)`, with which you can set the api key for authentication.
+Optionally, a custom resolve API url can be configured if, for example, the resolver service is running on a locally deployed side-car (`NewAPIConfigWithUrl(...)`).
 
 The flag will be applied immediately, meaning that Confidence will count the targeted user as having received the treatment. 
 
