@@ -57,8 +57,8 @@ type ConfidenceBuilder struct {
 
 func (e ConfidenceBuilder) SetAPIConfig(config APIConfig) ConfidenceBuilder {
 	e.confidence.Config = config
-	if config.APIResolveUrl == "" {
-		e.confidence.Config.APIResolveUrl = DefaultAPIResolveUrl
+	if config.APIResolveBaseUrl == "" {
+		e.confidence.Config.APIResolveBaseUrl = DefaultAPIResolveBaseUrl
 	}
 	return e
 }
