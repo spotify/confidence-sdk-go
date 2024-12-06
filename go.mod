@@ -1,11 +1,10 @@
 module github.com/spotify/confidence-sdk-go
 
-go 1.19
+go 1.20
 
 require (
 	github.com/open-feature/go-sdk v1.10.0
 	github.com/stretchr/testify v1.9.0
-	golang.org/x/text v0.14.0
 )
 
 require (
