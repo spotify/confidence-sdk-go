@@ -2,9 +2,11 @@ package confidence
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"net/http"
+	"net/url"
 	"reflect"
 	"strings"
 	"sync"
@@ -212,6 +214,13 @@ func (e Confidence) ResolveFlag(ctx context.Context, flag string, defaultValue i
 	if err != nil {
 		slog.Warn("Error in resolving flag", "flag", flag, "error", err)
 		return processResolveError(err, defaultValue)
+	}
+	key := url.QueryEscape(e.Config.APIKey)
+	flagEncoded := url.QueryEscape(flag)
+	json, err := json.Marshal(e.GetContext())
+	if err == nil {
+		jsonContextEncoded := url.QueryEscape(string(json))
+		e.Logger.Debug("See resolves for " + flag + " in Confidence: https://app.confidence.spotify.com/flags/resolver-test?client-key=" + key + "&flag=flags/" + flagEncoded + "&context=" + jsonContextEncoded)
 	}
 	if len(resp.ResolvedFlags) == 0 {
 		slog.Debug("Flag not found", "flag", flag)
