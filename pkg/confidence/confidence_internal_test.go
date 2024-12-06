@@ -5,9 +5,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/stretchr/testify/assert"
+	"log/slog"
 	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 type MockResolveClient struct {
@@ -255,5 +257,6 @@ func newConfidence(apiKey string, client ResolveClient) *Confidence {
 		Config:        config,
 		ResolveClient: client,
 		contextMap:    make(map[string]interface{}),
+		Logger:        slog.Default(),
 	}
 }
