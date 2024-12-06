@@ -3,22 +3,35 @@ package main
 import (
 	"context"
 	"fmt"
+	"log/slog"
+	"os"
+
 	c "github.com/spotify/confidence-sdk-go/pkg/confidence"
 )
 
 func main() {
+
+	// Set up the logger with the debug log level
+	var programLevel = new(slog.LevelVar)
+	programLevel.Set(slog.LevelDebug)
+	h := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: programLevel})
+	slog.SetDefault(slog.New(h))
+
+	confidence := c.NewConfidenceBuilder().SetAPIConfig(*c.NewAPIConfig("CLIENT_SECRET")).Build()
+	confidence.PutContext("targeting_key", "Random_targeting_key")
+	withAddedContext := confidence.WithContext(map[string]interface{}{
+		"Something": 343,
+	})
+
+	// we can pull flag values using a Confidence instance with extra context
 	fmt.Println("Fetching the flags...")
-
-	confidence := c.NewConfidenceBuilder().SetAPIConfig(*c.NewAPIConfig("API_KEY")).Build()
-	targetingKey := "Random_targeting_key"
-	confidence.PutContext("targeting_key", targetingKey)
-
-	colorValue := confidence.GetStringFlag(context.Background(), "hawkflag.color", "defaultValue").Value
-	messageValue := confidence.GetStringFlag(context.Background(), "hawkflag.message", "defaultValue").Value
+	colorValue := withAddedContext.GetStringFlag(context.Background(), "hawkflag.color", "defaultValue").Value
+	messageValue := withAddedContext.GetStringFlag(context.Background(), "hawkflag.message", "defaultValue").Value
 
 	colorYellow := "\033[33m"
 	colorGreen := "\033[32m"
 	colorRed := "\033[31m"
+	colorDefault := "\033[0m"
 
 	fmt.Println(" Color --> " + colorValue)
 
@@ -30,8 +43,13 @@ func main() {
 	default:
 		fmt.Println(colorRed, "Message --> "+messageValue)
 	}
+	fmt.Print(colorDefault, "")
 
-	wg := confidence.Track(context.Background(), "page-viewed", map[string]interface{}{})
+	wg := confidence.Track(context.Background(), "checkout-complete", map[string]interface{}{
+		"orderId": 1234,
+		"total":   100.0,
+		"items":   []string{"item1", "item2"},
+	})
 	wg.Wait()
 	fmt.Println("Event sent")
 }
