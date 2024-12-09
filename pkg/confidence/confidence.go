@@ -2,12 +2,16 @@ package confidence
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"reflect"
 	"strings"
 	"sync"
 	"time"
+
+	"golang.org/x/exp/slog"
 )
 
 type FlagResolver interface {
@@ -30,6 +34,7 @@ type Confidence struct {
 	contextMap    map[string]interface{}
 	Config        APIConfig
 	ResolveClient ResolveClient
+	Logger        *slog.Logger
 }
 
 func (e Confidence) GetContext() map[string]interface{} {
@@ -55,6 +60,11 @@ type ConfidenceBuilder struct {
 	confidence Confidence
 }
 
+func (e ConfidenceBuilder) SetLogger(logger *slog.Logger) ConfidenceBuilder {
+	e.confidence.Logger = logger
+	return e
+}
+
 func (e ConfidenceBuilder) SetAPIConfig(config APIConfig) ConfidenceBuilder {
 	e.confidence.Config = config
 	if config.APIResolveBaseUrl == "" {
@@ -69,14 +79,18 @@ func (e ConfidenceBuilder) SetResolveClient(client ResolveClient) ConfidenceBuil
 }
 
 func (e ConfidenceBuilder) Build() Confidence {
+	if e.confidence.Logger == nil {
+		e.confidence.Logger = slog.Default()
+	}
 	if e.confidence.ResolveClient == nil {
 		e.confidence.ResolveClient = HttpResolveClient{Client: &http.Client{}, Config: e.confidence.Config}
 	}
 	if e.confidence.EventUploader == nil {
-		e.confidence.EventUploader = HttpEventUploader{Client: &http.Client{}, Config: e.confidence.Config}
+		e.confidence.EventUploader = HttpEventUploader{Client: &http.Client{}, Config: e.confidence.Config, Logger: e.confidence.Logger}
 	}
 
 	e.confidence.contextMap = make(map[string]interface{})
+	e.confidence.Logger.Info("Confidence created", "config", e.confidence.Config)
 	return e.confidence
 }
 
@@ -117,8 +131,10 @@ func (e Confidence) Track(ctx context.Context, eventName string, data map[string
 			SendTime:      iso8601Time,
 			Events:        []Event{event},
 		}
+		e.Logger.Debug("EventUploading started", "eventName", eventName)
 		e.EventUploader.upload(ctx, batch)
 		wg.Done()
+		e.Logger.Debug("EventUploading completed", "eventName", eventName)
 	}()
 	return &wg
 }
@@ -138,6 +154,7 @@ func (e Confidence) WithContext(context map[string]interface{}) Confidence {
 		contextMap:    newMap,
 		Config:        e.Config,
 		ResolveClient: e.ResolveClient,
+		Logger:        e.Logger,
 	}
 }
 
@@ -196,9 +213,18 @@ func (e Confidence) ResolveFlag(ctx context.Context, flag string, defaultValue i
 			Sdk: sdk{Id: SDK_ID, Version: SDK_VERSION}})
 
 	if err != nil {
+		slog.Warn("Error in resolving flag", "flag", flag, "error", err)
 		return processResolveError(err, defaultValue)
 	}
+	key := url.QueryEscape(e.Config.APIKey)
+	flagEncoded := url.QueryEscape(flag)
+	json, err := json.Marshal(e.GetContext())
+	if err == nil {
+		jsonContextEncoded := url.QueryEscape(string(json))
+		e.Logger.Debug("See resolves for " + flag + " in Confidence: https://app.confidence.spotify.com/flags/resolver-test?client-key=" + key + "&flag=flags/" + flagEncoded + "&context=" + jsonContextEncoded)
+	}
 	if len(resp.ResolvedFlags) == 0 {
+		slog.Debug("Flag not found", "flag", flag)
 		return InterfaceResolutionDetail{
 			Value: defaultValue,
 			ResolutionDetail: ResolutionDetail{
@@ -213,6 +239,7 @@ func (e Confidence) ResolveFlag(ctx context.Context, flag string, defaultValue i
 
 	resolvedFlag := resp.ResolvedFlags[0]
 	if resolvedFlag.Flag != requestFlagName {
+		slog.Warn("Unexpected flag from remote", "flag", resolvedFlag.Flag)
 		return InterfaceResolutionDetail{
 			Value: defaultValue,
 			ResolutionDetail: ResolutionDetail{
