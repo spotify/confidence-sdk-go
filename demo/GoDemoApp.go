@@ -3,8 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
-	"log/slog"
 	"os"
+
+	"golang.org/x/exp/slog"
 
 	c "github.com/spotify/confidence-sdk-go/pkg/confidence"
 )
