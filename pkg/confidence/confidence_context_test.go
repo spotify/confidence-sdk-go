@@ -2,9 +2,10 @@ package confidence
 
 import (
 	"context"
-	"log/slog"
 	"reflect"
 	"testing"
+
+	"golang.org/x/exp/slog"
 
 	"github.com/stretchr/testify/assert"
 )

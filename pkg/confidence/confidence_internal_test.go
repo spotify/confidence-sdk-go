@@ -5,9 +5,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log/slog"
 	"reflect"
 	"testing"
+
+	"golang.org/x/exp/slog"
 
 	"github.com/stretchr/testify/assert"
 )

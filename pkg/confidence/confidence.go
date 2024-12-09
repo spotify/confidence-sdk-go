@@ -4,13 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log/slog"
 	"net/http"
 	"net/url"
 	"reflect"
 	"strings"
 	"sync"
 	"time"
+
+	"golang.org/x/exp/slog"
 )
 
 type FlagResolver interface {

@@ -4,8 +4,9 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"log/slog"
 	"net/http"
+
+	"golang.org/x/exp/slog"
 )
 
 type EventUploader interface {
