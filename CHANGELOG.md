@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.0](https://github.com/spotify/confidence-sdk-go/compare/v0.3.0...v0.4.0) (2024-12-10)
+
+
+### ✨ New Features
+
+* logging support via slog ([#64](https://github.com/spotify/confidence-sdk-go/issues/64)) ([f118ca4](https://github.com/spotify/confidence-sdk-go/commit/f118ca426ab4d7b36ed33082b999cbd9cded50f3))
+* logging support via slog ([#68](https://github.com/spotify/confidence-sdk-go/issues/68)) ([89dd834](https://github.com/spotify/confidence-sdk-go/commit/89dd834c9780f1b5443ddb42c51426f68231e151))
+
 ## [0.3.0](https://github.com/spotify/confidence-sdk-go/compare/v0.2.3...v0.3.0) (2024-09-10)
 
 
