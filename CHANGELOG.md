@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/spotify/confidence-sdk-go/compare/v0.4.0...v0.4.1) (2024-12-12)
+
+
+### 🐛 Bug Fixes
+
+* set flag name in resolve debugger link ([#70](https://github.com/spotify/confidence-sdk-go/issues/70)) ([8941632](https://github.com/spotify/confidence-sdk-go/commit/8941632dd001e88715da4d70b0b3f294d686cb80))
+
 ## [0.4.0](https://github.com/spotify/confidence-sdk-go/compare/v0.3.0...v0.4.0) (2024-12-10)
 
 
