@@ -18,8 +18,15 @@ func main() {
 	h := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: programLevel})
 	slog.SetDefault(slog.New(h))
 
-	confidence := c.NewConfidenceBuilder().SetAPIConfig(*c.NewAPIConfig("CLIENT_SECRET")).Build()
-	confidence.PutContext("targeting_key", "Random_targeting_key")
+	// Read the client secret from env
+	clientkey := os.Getenv("CONFIDENCE_GO_CLIENT")
+	if clientkey == "" {
+		fmt.Println("No client key defined")
+		os.Exit(1)
+	}
+
+	confidence := c.NewConfidenceBuilder().SetAPIConfig(*c.NewAPIConfig(clientkey)).Build()
+	confidence.PutContext("visitor_id", "enabled_value_visitor")
 	withAddedContext := confidence.WithContext(map[string]interface{}{
 		"Something": 343,
 	})
