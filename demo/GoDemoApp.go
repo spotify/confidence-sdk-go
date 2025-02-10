@@ -26,7 +26,7 @@ func main() {
 	}
 
 	confidence := c.NewConfidenceBuilder().SetAPIConfig(*c.NewAPIConfig(clientkey)).Build()
-	confidence.PutContext("visitor_id", "enabled_value_visitor")
+	confidence.PutContext("targeting_key", "Random_targeting_key")
 	withAddedContext := confidence.WithContext(map[string]interface{}{
 		"Something": 343,
 	})
