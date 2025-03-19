@@ -44,6 +44,15 @@ func TestResolveIntValue(t *testing.T) {
 	assert.Equal(t, int64(40), evalDetails.Value)
 }
 
+func TestResolveIntNullValue(t *testing.T) {
+	client := client(t, templateResponse(), nil)
+	client.PutContext("targeting_key", "user1")
+
+	evalDetails := client.GetIntFlag(context.Background(), "test-flag.integer-key-null", 99)
+
+	assert.Equal(t, int64(99), evalDetails.Value)
+}
+
 func TestResolveDoubleValue(t *testing.T) {
 	client := client(t, templateResponse(), nil)
 	client.PutContext("targeting_key", "user1")
@@ -51,6 +60,15 @@ func TestResolveDoubleValue(t *testing.T) {
 	evalDetails := client.GetDoubleFlag(context.Background(), "test-flag.double-key", 99.99)
 
 	assert.Equal(t, 20.203, evalDetails.Value)
+}
+
+func TestResolveDoubleNullValue(t *testing.T) {
+	client := client(t, templateResponse(), nil)
+	client.PutContext("targeting_key", "user1")
+
+	evalDetails := client.GetDoubleFlag(context.Background(), "test-flag.double-key-null-value", 99.99)
+
+	assert.Equal(t, 99.99, evalDetails.Value)
 }
 
 func TestResolveStringValue(t *testing.T) {
@@ -178,7 +196,9 @@ func templateResponseWithFlagName(flagName string) ResolveResponse {
    "boolean-key": true,
    "string-key": "treatment",
    "double-key": 20.203,
-   "integer-key": 40
+   "double-key-null-value": null,
+   "integer-key": 40,
+   "integer-key-null-value": null
   },
   "flagSchema": {
    "schema": {
@@ -218,9 +238,15 @@ func templateResponseWithFlagName(flagName string) ResolveResponse {
     "double-key": {
      "doubleSchema": {}
     },
+	"double-key-null-value": {
+     "doubleSchema": {}
+	},
     "integer-key": {
      "intSchema": {}
-    }
+    },
+	"integer-key-null-value": {
+     "intSchema": {}
+	}
    }
   },
   "reason": "RESOLVE_REASON_MATCH"

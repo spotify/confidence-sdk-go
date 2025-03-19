@@ -160,19 +160,27 @@ func replaceNumbers(basePath string, input map[string]interface{},
 
 		switch kind {
 		case reflect.Float64:
-			floatValue, err := value.(json.Number).Float64()
-			if err != nil {
-				return updatedMap, fmt.Errorf("unable to convert to float")
+			if jsonNum, ok := value.(json.Number); ok {
+				floatValue, err := jsonNum.Float64()
+				if err != nil {
+					return updatedMap, fmt.Errorf("unable to convert to float")
+				}
+
+				value = floatValue
 			}
 
-			updatedMap[key] = floatValue
+			updatedMap[key] = value
 		case reflect.Int64:
-			intValue, err := value.(json.Number).Int64()
-			if err != nil {
-				return updatedMap, fmt.Errorf("unable to convert to int")
+			if jsonNum, ok := value.(json.Number); ok {
+				intValue, err := jsonNum.Int64()
+				if err != nil {
+					return updatedMap, fmt.Errorf("unable to convert to int")
+				}
+
+				value = intValue
 			}
 
-			updatedMap[key] = intValue
+			updatedMap[key] = value
 		case reflect.Map:
 			asMap, ok := value.(map[string]interface{})
 			if !ok {
