@@ -69,6 +69,10 @@ func TestResolveDoubleNullValue(t *testing.T) {
 	evalDetails := client.GetDoubleFlag(context.Background(), "test-flag.double-key-null-value", 99.99)
 
 	assert.Equal(t, 99.99, evalDetails.Value)
+	assert.Equal(t, ErrorCode(""), evalDetails.ErrorCode)
+	assert.Equal(t, "", evalDetails.ErrorMessage)
+	assert.Equal(t, TargetingMatchReason, evalDetails.Reason)
+	assert.Equal(t, "flags/test-flag/variants/treatment", evalDetails.Variant)
 }
 
 func TestResolveStringValue(t *testing.T) {
