@@ -217,7 +217,7 @@ func typeMismatchError(defaultValue interface{}) InterfaceResolutionDetail {
 
 func ToBoolResolutionDetail(res InterfaceResolutionDetail,
 	defaultValue bool) BoolResolutionDetail {
-	if res.ResolutionDetail.Reason == TargetingMatchReason {
+	if res.ResolutionDetail.Reason == TargetingMatchReason && res.Value != nil {
 		v, ok := res.Value.(bool)
 		if ok {
 			return BoolResolutionDetail{
@@ -246,7 +246,7 @@ func ToBoolResolutionDetail(res InterfaceResolutionDetail,
 
 func ToStringResolutionDetail(res InterfaceResolutionDetail,
 	defaultValue string) StringResolutionDetail {
-	if res.ResolutionDetail.Reason == TargetingMatchReason {
+	if res.ResolutionDetail.Reason == TargetingMatchReason && res.Value != nil {
 		v, ok := res.Value.(string)
 		if ok {
 			return StringResolutionDetail{
@@ -255,7 +255,7 @@ func ToStringResolutionDetail(res InterfaceResolutionDetail,
 			}
 		}
 
-		err := NewTypeMismatchResolutionError("Unable to convert response property to boolean")
+		err := NewTypeMismatchResolutionError("Unable to convert response property to string")
 
 		return StringResolutionDetail{
 			Value: defaultValue,
@@ -277,7 +277,7 @@ func ToStringResolutionDetail(res InterfaceResolutionDetail,
 
 func ToFloatResolutionDetail(res InterfaceResolutionDetail,
 	defaultValue float64) FloatResolutionDetail {
-	if res.ResolutionDetail.Reason == TargetingMatchReason {
+	if res.ResolutionDetail.Reason == TargetingMatchReason && res.Value != nil {
 		v, ok := res.Value.(float64)
 		if ok {
 			return FloatResolutionDetail{
@@ -316,7 +316,7 @@ func ToObjectResolutionDetail(res InterfaceResolutionDetail, defaultValue interf
 			}
 		}
 
-		err := NewTypeMismatchResolutionError("Unable to convert response property to float")
+		err := NewTypeMismatchResolutionError("Unable to convert response property to object")
 
 		return InterfaceResolutionDetail{
 			Value: defaultValue,
@@ -338,7 +338,7 @@ func ToObjectResolutionDetail(res InterfaceResolutionDetail, defaultValue interf
 
 func ToIntResolutionDetail(res InterfaceResolutionDetail,
 	defaultValue int64) IntResolutionDetail {
-	if res.ResolutionDetail.Reason == TargetingMatchReason {
+	if res.ResolutionDetail.Reason == TargetingMatchReason && res.Value != nil {
 		v, ok := res.Value.(int64)
 		if ok {
 			return IntResolutionDetail{

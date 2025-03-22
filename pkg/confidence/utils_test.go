@@ -481,7 +481,7 @@ func TestToStringResolutionDetail(t *testing.T) {
 				Variant:      "",
 				Reason:       ErrorReason,
 				ErrorCode:    TypeMismatchCode,
-				ErrorMessage: "Unable to convert response property to boolean",
+				ErrorMessage: "Unable to convert response property to string",
 				FlagMetadata: nil,
 			},
 		}
