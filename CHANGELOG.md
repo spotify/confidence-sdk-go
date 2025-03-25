@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.2](https://github.com/spotify/confidence-sdk-go/compare/v0.4.1...v0.4.2) (2025-03-24)
+
+
+### 🐛 Bug Fixes
+
+* **demo:** Updated the to the latest version of the sdk and broke out the client secret to be retrieved from the env ([#72](https://github.com/spotify/confidence-sdk-go/issues/72)) ([8b62d67](https://github.com/spotify/confidence-sdk-go/commit/8b62d673de59272ee9f0ba749ed368e004a80050))
+* handle panic on null values ([#74](https://github.com/spotify/confidence-sdk-go/issues/74)) ([eba11b4](https://github.com/spotify/confidence-sdk-go/commit/eba11b40d1dad03c2506ff5863e04f0b8fafa4a1))
+
 ## [0.4.1](https://github.com/spotify/confidence-sdk-go/compare/v0.4.0...v0.4.1) (2024-12-12)
 
 
