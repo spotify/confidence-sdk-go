@@ -3,9 +3,10 @@ package confidence
 import (
 	"encoding/json"
 	"errors"
-	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSpitFlagString(t *testing.T) {
@@ -163,7 +164,7 @@ func TestProcessResolveError(t *testing.T) {
 
 		resDetails := res.ResolutionDetail
 		assert.Equal(t, FlagNotFoundCode, resDetails.ErrorCode)
-		assert.Equal(t, ErrorReason, resDetails.Reason)
+		assert.Equal(t, DefaultReason, resDetails.Reason)
 	})
 
 	t.Run("GeneralError", func(t *testing.T) {
@@ -173,7 +174,7 @@ func TestProcessResolveError(t *testing.T) {
 
 		resDetails := res.ResolutionDetail
 		assert.Equal(t, GeneralCode, resDetails.ErrorCode)
-		assert.Equal(t, ErrorReason, resDetails.Reason)
+		assert.Equal(t, DefaultReason, resDetails.Reason)
 	})
 }
 

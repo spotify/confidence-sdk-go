@@ -4,9 +4,8 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"net/http"
-
 	"golang.org/x/exp/slog"
+	"net/http"
 )
 
 type EventUploader interface {
@@ -17,6 +16,16 @@ type HttpEventUploader struct {
 	Client *http.Client
 	Config APIConfig
 	Logger *slog.Logger
+}
+
+func NewHttpEventUploader(config APIConfig, logger *slog.Logger) HttpEventUploader {
+	return HttpEventUploader{
+		Client: &http.Client{
+			Timeout: config.EventTimeout,
+		},
+		Config: config,
+		Logger: logger,
+	}
 }
 
 func (e HttpEventUploader) upload(ctx context.Context, request EventBatchRequest) {
