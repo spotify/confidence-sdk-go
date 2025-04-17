@@ -14,6 +14,15 @@ type HttpResolveClient struct {
 	Config APIConfig
 }
 
+func NewHttpResolveClient(config APIConfig) HttpResolveClient {
+	return HttpResolveClient{
+		Client: &http.Client{
+			Timeout: config.ResolveTimeout,
+		},
+		Config: config,
+	}
+}
+
 func parseErrorMessage(body io.ReadCloser) string {
 	var resolveError resolveErrorMessage
 	decoder := json.NewDecoder(body)

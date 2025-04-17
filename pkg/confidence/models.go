@@ -3,6 +3,7 @@ package confidence
 import (
 	"context"
 	"errors"
+	"time"
 )
 
 func NewFlagNotFoundResolutionError(msg string) ResolutionError {
@@ -61,12 +62,16 @@ const DefaultAPIResolveBaseUrl = "https://resolver.confidence.dev"
 type APIConfig struct {
 	APIKey            string
 	APIResolveBaseUrl string
+	ResolveTimeout    time.Duration
+	EventTimeout      time.Duration
 }
 
 func NewAPIConfig(apiKey string) *APIConfig {
 	return &APIConfig{
 		APIKey:            apiKey,
 		APIResolveBaseUrl: DefaultAPIResolveBaseUrl,
+		ResolveTimeout:    10000 * time.Millisecond,
+		EventTimeout:      10000 * time.Millisecond,
 	}
 }
 
@@ -74,6 +79,8 @@ func NewAPIConfigWithUrl(apiKey, APIResolveBaseUrl string) *APIConfig {
 	return &APIConfig{
 		APIKey:            apiKey,
 		APIResolveBaseUrl: APIResolveBaseUrl,
+		ResolveTimeout:    10000 * time.Millisecond,
+		EventTimeout:      10000 * time.Millisecond,
 	}
 }
 

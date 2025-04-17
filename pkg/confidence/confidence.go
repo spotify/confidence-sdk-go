@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"net/url"
 	"reflect"
 	"strings"
@@ -83,10 +82,10 @@ func (e ConfidenceBuilder) Build() Confidence {
 		e.confidence.Logger = slog.Default()
 	}
 	if e.confidence.ResolveClient == nil {
-		e.confidence.ResolveClient = HttpResolveClient{Client: &http.Client{}, Config: e.confidence.Config}
+		e.confidence.ResolveClient = NewHttpResolveClient(e.confidence.Config)
 	}
 	if e.confidence.EventUploader == nil {
-		e.confidence.EventUploader = HttpEventUploader{Client: &http.Client{}, Config: e.confidence.Config, Logger: e.confidence.Logger}
+		e.confidence.EventUploader = NewHttpEventUploader(e.confidence.Config, e.confidence.Logger)
 	}
 
 	e.confidence.contextMap = make(map[string]interface{})
