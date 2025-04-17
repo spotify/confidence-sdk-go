@@ -6,7 +6,7 @@ This repo contains the [Confidence](https://confidence.spotify.com/) Go SDK.
 <!---x-release-please-start-version-->
 ```
 require (
-	github.com/spotify/confidence-sdk-go v0.4.2
+	github.com/spotify/confidence-sdk-go v0.4.3
 )
 ```
 <!---x-release-please-end-->
