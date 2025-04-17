@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net"
 	"reflect"
 	"strings"
 )
@@ -82,13 +83,27 @@ func getTypeForPath(schema map[string]interface{}, path string) (reflect.Kind, e
 }
 
 func processResolveError(err error, defaultValue interface{}) InterfaceResolutionDetail {
+	// Try to unwrap the error to find the underlying type
+	var netErr net.Error
+	if errors.As(err, &netErr) && netErr.Timeout() {
+		return InterfaceResolutionDetail{
+			Value: defaultValue,
+			ResolutionDetail: ResolutionDetail{
+				Variant:      "",
+				Reason:       DefaultReason,
+				ErrorCode:    TimeoutCode,
+				ErrorMessage: "error when resolving, timeout",
+				FlagMetadata: nil,
+			}}
+	}
+
 	switch {
 	case errors.Is(err, errFlagNotFound):
 		return InterfaceResolutionDetail{
 			Value: defaultValue,
 			ResolutionDetail: ResolutionDetail{
 				Variant:      "",
-				Reason:       ErrorReason,
+				Reason:       DefaultReason,
 				ErrorCode:    FlagNotFoundCode,
 				ErrorMessage: "error when resolving, flag not found",
 				FlagMetadata: nil,
@@ -99,7 +114,7 @@ func processResolveError(err error, defaultValue interface{}) InterfaceResolutio
 			Value: defaultValue,
 			ResolutionDetail: ResolutionDetail{
 				Variant:      "",
-				Reason:       ErrorReason,
+				Reason:       DefaultReason,
 				ErrorCode:    GeneralCode,
 				ErrorMessage: "error when resolving, returning default value",
 				FlagMetadata: nil,

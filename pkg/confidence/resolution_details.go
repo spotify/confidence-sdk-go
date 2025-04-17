@@ -44,6 +44,8 @@ const (
 	TargetingKeyMissingCode ErrorCode = "TARGETING_KEY_MISSING"
 	// InvalidContextCode - the evaluation context does not meet provider requirements.
 	InvalidContextCode ErrorCode = "INVALID_CONTEXT"
+	// TimeoutCode - the request timed out.
+	TimeoutCode ErrorCode = "TIMEOUT"
 	// GeneralCode - the error was for a reason not enumerated above.
 	GeneralCode ErrorCode = "GENERAL"
 )
