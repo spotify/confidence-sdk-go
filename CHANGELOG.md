@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.3](https://github.com/spotify/confidence-sdk-go/compare/v0.4.2...v0.4.3) (2025-04-17)
+
+
+### ✨ New Features
+
+* add timeout for http calls ([#75](https://github.com/spotify/confidence-sdk-go/issues/75)) ([9d8b640](https://github.com/spotify/confidence-sdk-go/commit/9d8b640bcabd2029b01e688d3f7ab799f20f04fa))
+
 ## [0.4.2](https://github.com/spotify/confidence-sdk-go/compare/v0.4.1...v0.4.2) (2025-03-24)
 
 
