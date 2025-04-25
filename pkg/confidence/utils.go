@@ -1,17 +1,33 @@
 package confidence
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"net"
 	"reflect"
 	"strings"
+
+	"golang.org/x/exp/slog"
 )
 
 const ErrorReason Reason = "ERROR"
 const TargetingMatchReason Reason = "TARGETING_MATCH"
 const DefaultReason Reason = "DEFAULT"
+
+func logResolveTesterHint(logger *slog.Logger, flagName, apiKey string, context map[string]interface{}) {
+	object := map[string]interface{}{
+		"flag":      "flags/" + flagName,
+		"clientKey": apiKey,
+		"context":   context,
+	}
+	json, err := json.Marshal(object)
+	if err == nil {
+		base64 := base64.StdEncoding.EncodeToString(json)
+		logger.Debug("Check your flag evaluation for " + flagName + " by copy pasting the payload to the Resolve tester '" + base64 + "'")
+	}
+}
 
 func splitFlagString(flag string) (string, string) {
 	splittedFlag := strings.SplitN(flag, ".", 2)
