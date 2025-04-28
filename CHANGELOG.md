@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.4](https://github.com/spotify/confidence-sdk-go/compare/v0.4.3...v0.4.4) (2025-04-28)
+
+
+### 🐛 Bug Fixes
+
+* change how we log resolve tester hints ([#77](https://github.com/spotify/confidence-sdk-go/issues/77)) ([f1b6c49](https://github.com/spotify/confidence-sdk-go/commit/f1b6c49cda8cfeb199aea70739f9023410cc2b48))
+
 ## [0.4.3](https://github.com/spotify/confidence-sdk-go/compare/v0.4.2...v0.4.3) (2025-04-17)
 
 
