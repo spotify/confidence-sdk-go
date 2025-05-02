@@ -3,24 +3,42 @@ package confidence
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+	"sync"
+	"time"
+
+	"google.golang.org/protobuf/proto"
 )
 
 type HttpResolveClient struct {
-	Client *http.Client
-	Config APIConfig
+	Client    *http.Client
+	Config    APIConfig
+	latencies []int64
+	mu        sync.Mutex
 }
 
-func NewHttpResolveClient(config APIConfig) HttpResolveClient {
-	return HttpResolveClient{
+func NewHttpResolveClient(config APIConfig) *HttpResolveClient {
+	return &HttpResolveClient{
 		Client: &http.Client{
 			Timeout: config.ResolveTimeout,
 		},
-		Config: config,
+		Config:    config,
+		latencies: make([]int64, 0),
 	}
+}
+
+func (client *HttpResolveClient) GetLatencies() []int64 {
+	client.mu.Lock()
+	defer client.mu.Unlock()
+	latencies := make([]int64, len(client.latencies))
+	copy(latencies, client.latencies)
+	// Latencies are cleared to avoid sending cumulative data
+	client.latencies = client.latencies[:0]
+	return latencies
 }
 
 func parseErrorMessage(body io.ReadCloser) string {
@@ -34,7 +52,7 @@ func parseErrorMessage(body io.ReadCloser) string {
 	return resolveError.Message
 }
 
-func (client HttpResolveClient) SendResolveRequest(ctx context.Context,
+func (client *HttpResolveClient) SendResolveRequest(ctx context.Context,
 	request ResolveRequest) (ResolveResponse, error) {
 	jsonRequest, err := json.Marshal(request)
 	if err != nil {
@@ -48,6 +66,38 @@ func (client HttpResolveClient) SendResolveRequest(ctx context.Context,
 		return ResolveResponse{}, err
 	}
 
+	latencies := client.GetLatencies()
+	traces := make([]*ProtoLibraryTraces_ProtoTrace, 0, len(latencies))
+	for _, prevLatency := range latencies {
+		traces = append(traces, &ProtoLibraryTraces_ProtoTrace{
+			Id: ProtoLibraryTraces_PROTO_TRACE_ID_RESOLVE_LATENCY,
+			Trace: &ProtoLibraryTraces_ProtoTrace_RequestTrace{
+				RequestTrace: &ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace{
+					MillisecondDuration: uint64(prevLatency),
+					Status:              ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_SUCCESS,
+				},
+			},
+		})
+	}
+
+	monitoring := &ProtoMonitoring{
+		Platform: ProtoPlatform_PROTO_PLATFORM_GO,
+		LibraryTraces: []*ProtoLibraryTraces{
+			{
+				Library:        ProtoLibraryTraces_PROTO_LIBRARY_CONFIDENCE,
+				LibraryVersion: SDK_VERSION,
+				Traces:         traces,
+			},
+		},
+	}
+
+	monitoringBytes, err := proto.Marshal(monitoring)
+	if err == nil {
+		monitoringBase64 := base64.StdEncoding.EncodeToString(monitoringBytes)
+		req.Header.Set("X-CONFIDENCE-TELEMETRY", monitoringBase64)
+	}
+
+	startTime := time.Now()
 	resp, err := client.Client.Do(req)
 	if err != nil {
 		return ResolveResponse{}, fmt.Errorf("error when calling the resolver service: %w", err)
@@ -66,5 +116,12 @@ func (client HttpResolveClient) SendResolveRequest(ctx context.Context,
 	if err != nil {
 		return ResolveResponse{}, fmt.Errorf("error when deserializing response from the resolver service: %w", err)
 	}
+
+	// Record the latency in milliseconds
+	latency := time.Since(startTime).Milliseconds()
+	client.mu.Lock()
+	client.latencies = append(client.latencies, latency)
+	client.mu.Unlock()
+
 	return result, nil
 }

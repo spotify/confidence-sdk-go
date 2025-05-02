@@ -11,12 +11,12 @@ import (
 )
 
 func main() {
-	clientSecret := "API_KEY"
+	clientKey := "CLIENT_KEY"
 	fmt.Println("Fetching the flags...")
 
-	confidence := c.NewConfidenceBuilder().SetAPIConfig(c.APIConfig{APIKey: clientSecret}).Build()
+	confidence := c.NewConfidenceBuilder().SetAPIConfig(c.APIConfig{APIKey: clientKey}).Build()
 
-	confidence.PutContext("hello", "world")
+	confidence.PutContext("visitor_id", "anonym_user_1")
 
 	provider := p.NewFlagProvider(confidence)
 
