@@ -15,10 +15,10 @@ import (
 )
 
 type HttpResolveClient struct {
-	Client    *http.Client
-	Config    APIConfig
-	latencies []int64
-	mu        sync.Mutex
+	Client *http.Client
+	Config APIConfig
+	traces []*ProtoLibraryTraces_ProtoTrace
+	mu     sync.Mutex
 }
 
 func NewHttpResolveClient(config APIConfig) *HttpResolveClient {
@@ -26,19 +26,19 @@ func NewHttpResolveClient(config APIConfig) *HttpResolveClient {
 		Client: &http.Client{
 			Timeout: config.ResolveTimeout,
 		},
-		Config:    config,
-		latencies: make([]int64, 0),
+		Config: config,
+		traces: make([]*ProtoLibraryTraces_ProtoTrace, 0),
 	}
 }
 
-func (client *HttpResolveClient) GetLatencies() []int64 {
+func (client *HttpResolveClient) GetTraces() []*ProtoLibraryTraces_ProtoTrace {
 	client.mu.Lock()
 	defer client.mu.Unlock()
-	latencies := make([]int64, len(client.latencies))
-	copy(latencies, client.latencies)
-	// Latencies are cleared to avoid sending cumulative data
-	client.latencies = client.latencies[:0]
-	return latencies
+	traces := make([]*ProtoLibraryTraces_ProtoTrace, len(client.traces))
+	copy(traces, client.traces)
+	// Traces are cleared to avoid sending cumulative data
+	client.traces = client.traces[:0]
+	return traces
 }
 
 func parseErrorMessage(body io.ReadCloser) string {
@@ -66,19 +66,7 @@ func (client *HttpResolveClient) SendResolveRequest(ctx context.Context,
 		return ResolveResponse{}, err
 	}
 
-	latencies := client.GetLatencies()
-	traces := make([]*ProtoLibraryTraces_ProtoTrace, 0, len(latencies))
-	for _, prevLatency := range latencies {
-		traces = append(traces, &ProtoLibraryTraces_ProtoTrace{
-			Id: ProtoLibraryTraces_PROTO_TRACE_ID_RESOLVE_LATENCY,
-			Trace: &ProtoLibraryTraces_ProtoTrace_RequestTrace{
-				RequestTrace: &ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace{
-					MillisecondDuration: uint64(prevLatency),
-					Status:              ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_SUCCESS,
-				},
-			},
-		})
-	}
+	traces := client.GetTraces()
 
 	monitoring := &ProtoMonitoring{
 		Platform: ProtoPlatform_PROTO_PLATFORM_GO,
@@ -100,11 +88,35 @@ func (client *HttpResolveClient) SendResolveRequest(ctx context.Context,
 	startTime := time.Now()
 	resp, err := client.Client.Do(req)
 	if err != nil {
+		// Record network error trace
+		client.mu.Lock()
+		client.traces = append(client.traces, &ProtoLibraryTraces_ProtoTrace{
+			Id: ProtoLibraryTraces_PROTO_TRACE_ID_RESOLVE_LATENCY,
+			Trace: &ProtoLibraryTraces_ProtoTrace_RequestTrace{
+				RequestTrace: &ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace{
+					MillisecondDuration: uint64(time.Since(startTime).Milliseconds()),
+					Status:              ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_ERROR,
+				},
+			},
+		})
+		client.mu.Unlock()
 		return ResolveResponse{}, fmt.Errorf("error when calling the resolver service: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
+		// Record HTTP error trace
+		client.mu.Lock()
+		client.traces = append(client.traces, &ProtoLibraryTraces_ProtoTrace{
+			Id: ProtoLibraryTraces_PROTO_TRACE_ID_RESOLVE_LATENCY,
+			Trace: &ProtoLibraryTraces_ProtoTrace_RequestTrace{
+				RequestTrace: &ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace{
+					MillisecondDuration: uint64(time.Since(startTime).Milliseconds()),
+					Status:              ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_ERROR,
+				},
+			},
+		})
+		client.mu.Unlock()
 		return ResolveResponse{},
 			fmt.Errorf("got '%s' error from the resolver service: %s", resp.Status, parseErrorMessage(resp.Body))
 	}
@@ -114,13 +126,32 @@ func (client *HttpResolveClient) SendResolveRequest(ctx context.Context,
 	decoder.UseNumber()
 	err = decoder.Decode(&result)
 	if err != nil {
+		// Record deserialization error trace
+		client.mu.Lock()
+		client.traces = append(client.traces, &ProtoLibraryTraces_ProtoTrace{
+			Id: ProtoLibraryTraces_PROTO_TRACE_ID_RESOLVE_LATENCY,
+			Trace: &ProtoLibraryTraces_ProtoTrace_RequestTrace{
+				RequestTrace: &ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace{
+					MillisecondDuration: uint64(time.Since(startTime).Milliseconds()),
+					Status:              ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_ERROR,
+				},
+			},
+		})
+		client.mu.Unlock()
 		return ResolveResponse{}, fmt.Errorf("error when deserializing response from the resolver service: %w", err)
 	}
 
-	// Record the latency in milliseconds
-	latency := time.Since(startTime).Milliseconds()
+	// Record success trace
 	client.mu.Lock()
-	client.latencies = append(client.latencies, latency)
+	client.traces = append(client.traces, &ProtoLibraryTraces_ProtoTrace{
+		Id: ProtoLibraryTraces_PROTO_TRACE_ID_RESOLVE_LATENCY,
+		Trace: &ProtoLibraryTraces_ProtoTrace_RequestTrace{
+			RequestTrace: &ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace{
+				MillisecondDuration: uint64(time.Since(startTime).Milliseconds()),
+				Status:              ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_SUCCESS,
+			},
+		},
+	})
 	client.mu.Unlock()
 
 	return result, nil
