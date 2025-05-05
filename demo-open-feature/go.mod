@@ -11,4 +11,7 @@ require (
 require (
 	github.com/go-logr/logr v1.4.1 // indirect
 	golang.org/x/exp v0.0.0-20240213143201-ec583247a57a // indirect
+	google.golang.org/protobuf v1.33.0 // indirect
 )
+
+replace github.com/spotify/confidence-sdk-go => ../

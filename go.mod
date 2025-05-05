@@ -6,6 +6,7 @@ require (
 	github.com/open-feature/go-sdk v1.10.0
 	github.com/stretchr/testify v1.9.0
 	golang.org/x/exp v0.0.0-20240213143201-ec583247a57a
+	google.golang.org/protobuf v1.33.0
 )
 
 require (
