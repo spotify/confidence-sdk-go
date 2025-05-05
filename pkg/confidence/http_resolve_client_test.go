@@ -205,7 +205,7 @@ func TestHttpResolveClient_TelemetryHeader_NetworkError(t *testing.T) {
 	_, err := client.SendResolveRequest(context.Background(), request)
 	assert.Error(t, err)
 
-	traces := client.GetTraces()
+	traces := client.GetTracesAndClear()
 	assert.Equal(t, 1, len(traces))
 	assert.Equal(t, ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_ERROR, traces[0].GetRequestTrace().Status)
 }
@@ -248,16 +248,13 @@ func TestHttpResolveClient_TelemetryHeader_MixedStatuses(t *testing.T) {
 		} else {
 			assert.Error(t, err)
 		}
-	}
 
-	traces := client.GetTraces()
-	assert.Equal(t, 4, len(traces))
-
-	for i, trace := range traces {
+		traces := client.GetTracesAndClear()
+		assert.Equal(t, 1, len(traces), "Expected 1 trace after request %d", i)
 		if i%2 == 0 {
-			assert.Equal(t, ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_SUCCESS, trace.GetRequestTrace().Status, "Expected success status at index %d", i)
+			assert.Equal(t, ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_SUCCESS, traces[0].GetRequestTrace().Status, "Expected success status at index %d", i)
 		} else {
-			assert.Equal(t, ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_ERROR, trace.GetRequestTrace().Status, "Expected error status at index %d", i)
+			assert.Equal(t, ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_ERROR, traces[0].GetRequestTrace().Status, "Expected error status at index %d", i)
 		}
 	}
 }
@@ -287,7 +284,7 @@ func TestHttpResolveClient_TelemetryHeader_DeserializationError(t *testing.T) {
 	_, err := client.SendResolveRequest(context.Background(), request)
 	assert.Error(t, err)
 
-	traces := client.GetTraces()
+	traces := client.GetTracesAndClear()
 	assert.Equal(t, 1, len(traces))
 	assert.Equal(t, ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_ERROR, traces[0].GetRequestTrace().Status)
 }

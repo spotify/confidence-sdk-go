@@ -31,7 +31,7 @@ func NewHttpResolveClient(config APIConfig) *HttpResolveClient {
 	}
 }
 
-func (client *HttpResolveClient) GetTraces() []*ProtoLibraryTraces_ProtoTrace {
+func (client *HttpResolveClient) GetTracesAndClear() []*ProtoLibraryTraces_ProtoTrace {
 	client.mu.Lock()
 	defer client.mu.Unlock()
 	traces := make([]*ProtoLibraryTraces_ProtoTrace, len(client.traces))
@@ -66,7 +66,7 @@ func (client *HttpResolveClient) SendResolveRequest(ctx context.Context,
 		return ResolveResponse{}, err
 	}
 
-	traces := client.GetTraces()
+	traces := client.GetTracesAndClear()
 
 	monitoring := &ProtoMonitoring{
 		Platform: ProtoPlatform_PROTO_PLATFORM_GO,
@@ -88,7 +88,6 @@ func (client *HttpResolveClient) SendResolveRequest(ctx context.Context,
 	startTime := time.Now()
 	resp, err := client.Client.Do(req)
 	if err != nil {
-		// Record network error trace
 		client.mu.Lock()
 		client.traces = append(client.traces, &ProtoLibraryTraces_ProtoTrace{
 			Id: ProtoLibraryTraces_PROTO_TRACE_ID_RESOLVE_LATENCY,
@@ -105,7 +104,6 @@ func (client *HttpResolveClient) SendResolveRequest(ctx context.Context,
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		// Record HTTP error trace
 		client.mu.Lock()
 		client.traces = append(client.traces, &ProtoLibraryTraces_ProtoTrace{
 			Id: ProtoLibraryTraces_PROTO_TRACE_ID_RESOLVE_LATENCY,
@@ -126,7 +124,6 @@ func (client *HttpResolveClient) SendResolveRequest(ctx context.Context,
 	decoder.UseNumber()
 	err = decoder.Decode(&result)
 	if err != nil {
-		// Record deserialization error trace
 		client.mu.Lock()
 		client.traces = append(client.traces, &ProtoLibraryTraces_ProtoTrace{
 			Id: ProtoLibraryTraces_PROTO_TRACE_ID_RESOLVE_LATENCY,
@@ -141,7 +138,6 @@ func (client *HttpResolveClient) SendResolveRequest(ctx context.Context,
 		return ResolveResponse{}, fmt.Errorf("error when deserializing response from the resolver service: %w", err)
 	}
 
-	// Record success trace
 	client.mu.Lock()
 	client.traces = append(client.traces, &ProtoLibraryTraces_ProtoTrace{
 		Id: ProtoLibraryTraces_PROTO_TRACE_ID_RESOLVE_LATENCY,
