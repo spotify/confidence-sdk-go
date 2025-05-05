@@ -56,6 +56,16 @@ wg := confidence.Track(context.Background(), "checkout-complete", map[string]int
 wg.Wait()
 ```
 
+### Telemetry
+
+The SDK includes telemetry functionality that helps monitor SDK performance and usage. By default, telemetry is enabled and collects metrics (anonymously) such as resolve latency and request status. This data is used by the Confidence team, and in certain cases it is also exposed to the SDK adopters. You can disable telemetry by setting `DisableTelemetry: true` in the `APIConfig`:
+
+```go
+config := c.NewAPIConfig("clientSecret")
+config.DisableTelemetry = true
+confidenceSdk := c.NewConfidenceBuilder().SetAPIConfig(*config).Build()
+```
+
 ## Logging
 
 Unless specifically configured using the `ConfidenceBuilder` `setLogger()` function; Confidence uses the default instance of [slog](https://pkg.go.dev/log/slog) for logging valuable information during runtime.
