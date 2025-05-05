@@ -211,7 +211,7 @@ func TestHttpResolveClient_TelemetryHeader_NetworkError(t *testing.T) {
 	_, err := client.SendResolveRequest(context.Background(), request)
 	assert.Error(t, err)
 
-	traces := client.GetTracesAndClear()
+	traces := client.PullTraces()
 	assert.Equal(t, 1, len(traces))
 	assert.Equal(t, ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_ERROR, traces[0].GetRequestTrace().Status)
 }
@@ -257,7 +257,7 @@ func TestHttpResolveClient_TelemetryHeader_MixedStatuses(t *testing.T) {
 			assert.Error(t, err)
 		}
 
-		traces := client.GetTracesAndClear()
+		traces := client.PullTraces()
 		assert.Equal(t, 1, len(traces), "Expected 1 trace after request %d", i)
 		if i%2 == 0 {
 			assert.Equal(t, ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_SUCCESS, traces[0].GetRequestTrace().Status, "Expected success status at index %d", i)
@@ -292,7 +292,7 @@ func TestHttpResolveClient_TelemetryHeader_DeserializationError(t *testing.T) {
 	_, err := client.SendResolveRequest(context.Background(), request)
 	assert.Error(t, err)
 
-	traces := client.GetTracesAndClear()
+	traces := client.PullTraces()
 	assert.Equal(t, 1, len(traces))
 	assert.Equal(t, ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_ERROR, traces[0].GetRequestTrace().Status)
 }
@@ -324,7 +324,7 @@ func TestHttpResolveClient_TelemetryHeader_TimeoutError(t *testing.T) {
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "Client.Timeout exceeded while awaiting headers")
 
-	traces := client.GetTracesAndClear()
+	traces := client.PullTraces()
 	assert.Equal(t, 1, len(traces))
 	assert.Equal(t, ProtoLibraryTraces_PROTO_TRACE_ID_RESOLVE_LATENCY, traces[0].Id)
 	assert.NotNil(t, traces[0].GetRequestTrace())
@@ -366,6 +366,6 @@ func TestHttpResolveClient_TelemetryHeader_Disabled(t *testing.T) {
 	assert.Equal(t, 0, len(receivedHeaders))
 
 	// Verify no traces were collected
-	traces := client.GetTracesAndClear()
+	traces := client.PullTraces()
 	assert.Equal(t, 0, len(traces))
 }

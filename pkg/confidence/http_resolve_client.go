@@ -29,7 +29,7 @@ func NewHttpResolveClient(config APIConfig) *HttpResolveClient {
 	}
 }
 
-func (client *HttpResolveClient) GetTracesAndClear() []*ProtoLibraryTraces_ProtoTrace {
+func (client *HttpResolveClient) PullTraces() []*ProtoLibraryTraces_ProtoTrace {
 	traces := make([]*ProtoLibraryTraces_ProtoTrace, 0)
 	for {
 		select {
@@ -52,7 +52,7 @@ func parseErrorMessage(body io.ReadCloser) string {
 	return resolveError.Message
 }
 
-func (client *HttpResolveClient) sendTrace(startTime time.Time, status ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_ProtoStatus) {
+func (client *HttpResolveClient) appendTrace(startTime time.Time, status ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_ProtoStatus) {
 	if client.Config.DisableTelemetry {
 		return
 	}
@@ -74,11 +74,11 @@ func (client *HttpResolveClient) sendTrace(startTime time.Time, status ProtoLibr
 func (client *HttpResolveClient) addTelemetryHeader(req *http.Request) {
 	if client.Config.DisableTelemetry {
 		// Clear any existing traces when telemetry is disabled
-		client.GetTracesAndClear()
+		client.PullTraces()
 		return
 	}
 
-	traces := client.GetTracesAndClear()
+	traces := client.PullTraces()
 	monitoring := &ProtoMonitoring{
 		Platform: ProtoPlatform_PROTO_PLATFORM_GO,
 		LibraryTraces: []*ProtoLibraryTraces{
@@ -120,13 +120,13 @@ func (client *HttpResolveClient) SendResolveRequest(ctx context.Context,
 		if err, ok := err.(interface{ Timeout() bool }); ok && err.Timeout() {
 			status = ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_TIMEOUT
 		}
-		client.sendTrace(startTime, status)
+		client.appendTrace(startTime, status)
 		return ResolveResponse{}, fmt.Errorf("error when calling the resolver service: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		client.sendTrace(startTime, ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_ERROR)
+		client.appendTrace(startTime, ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_ERROR)
 		return ResolveResponse{},
 			fmt.Errorf("got '%s' error from the resolver service: %s", resp.Status, parseErrorMessage(resp.Body))
 	}
@@ -136,10 +136,10 @@ func (client *HttpResolveClient) SendResolveRequest(ctx context.Context,
 	decoder.UseNumber()
 	err = decoder.Decode(&result)
 	if err != nil {
-		client.sendTrace(startTime, ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_ERROR)
+		client.appendTrace(startTime, ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_ERROR)
 		return ResolveResponse{}, fmt.Errorf("error when deserializing response from the resolver service: %w", err)
 	}
 
-	client.sendTrace(startTime, ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_SUCCESS)
+	client.appendTrace(startTime, ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_SUCCESS)
 	return result, nil
 }
