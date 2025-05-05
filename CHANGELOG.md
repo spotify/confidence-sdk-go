@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.5](https://github.com/spotify/confidence-sdk-go/compare/v0.4.4...v0.4.5) (2025-05-05)
+
+
+### ✨ New Features
+
+* Add support for Telemetry ([#79](https://github.com/spotify/confidence-sdk-go/issues/79)) ([e0de573](https://github.com/spotify/confidence-sdk-go/commit/e0de57315c8b8e22ae29711bcea3cb91f9ee0a16))
+
 ## [0.4.4](https://github.com/spotify/confidence-sdk-go/compare/v0.4.3...v0.4.4) (2025-04-28)
 
 
