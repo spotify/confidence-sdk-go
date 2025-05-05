@@ -64,6 +64,7 @@ type APIConfig struct {
 	APIResolveBaseUrl string
 	ResolveTimeout    time.Duration
 	EventTimeout      time.Duration
+	DisableTelemetry  bool
 }
 
 func NewAPIConfig(apiKey string) *APIConfig {
@@ -72,6 +73,7 @@ func NewAPIConfig(apiKey string) *APIConfig {
 		APIResolveBaseUrl: DefaultAPIResolveBaseUrl,
 		ResolveTimeout:    10000 * time.Millisecond,
 		EventTimeout:      10000 * time.Millisecond,
+		DisableTelemetry:  false,
 	}
 }
 
@@ -81,6 +83,7 @@ func NewAPIConfigWithUrl(apiKey, APIResolveBaseUrl string) *APIConfig {
 		APIResolveBaseUrl: APIResolveBaseUrl,
 		ResolveTimeout:    10000 * time.Millisecond,
 		EventTimeout:      10000 * time.Millisecond,
+		DisableTelemetry:  false,
 	}
 }
 

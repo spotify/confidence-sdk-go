@@ -52,22 +52,33 @@ func parseErrorMessage(body io.ReadCloser) string {
 	return resolveError.Message
 }
 
-func (client *HttpResolveClient) SendResolveRequest(ctx context.Context,
-	request ResolveRequest) (ResolveResponse, error) {
-	jsonRequest, err := json.Marshal(request)
-	if err != nil {
-		return ResolveResponse{}, fmt.Errorf("error when serializing request to the resolver service: %w", err)
+func (client *HttpResolveClient) sendTrace(startTime time.Time, status ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_ProtoStatus) {
+	if client.Config.DisableTelemetry {
+		return
 	}
+	select {
+	case client.traces <- &ProtoLibraryTraces_ProtoTrace{
+		Id: ProtoLibraryTraces_PROTO_TRACE_ID_RESOLVE_LATENCY,
+		Trace: &ProtoLibraryTraces_ProtoTrace_RequestTrace{
+			RequestTrace: &ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace{
+				MillisecondDuration: uint64(time.Since(startTime).Milliseconds()),
+				Status:              status,
+			},
+		},
+	}:
+	default:
+		// Channel is full, drop the trace
+	}
+}
 
-	payload := bytes.NewBuffer(jsonRequest)
-	req, err := http.NewRequestWithContext(ctx,
-		http.MethodPost, fmt.Sprintf("%s/v1/flags:resolve", client.Config.APIResolveBaseUrl), payload)
-	if err != nil {
-		return ResolveResponse{}, err
+func (client *HttpResolveClient) addTelemetryHeader(req *http.Request) {
+	if client.Config.DisableTelemetry {
+		// Clear any existing traces when telemetry is disabled
+		client.GetTracesAndClear()
+		return
 	}
 
 	traces := client.GetTracesAndClear()
-
 	monitoring := &ProtoMonitoring{
 		Platform: ProtoPlatform_PROTO_PLATFORM_GO,
 		LibraryTraces: []*ProtoLibraryTraces{
@@ -84,6 +95,23 @@ func (client *HttpResolveClient) SendResolveRequest(ctx context.Context,
 		monitoringBase64 := base64.StdEncoding.EncodeToString(monitoringBytes)
 		req.Header.Set("X-CONFIDENCE-TELEMETRY", monitoringBase64)
 	}
+}
+
+func (client *HttpResolveClient) SendResolveRequest(ctx context.Context,
+	request ResolveRequest) (ResolveResponse, error) {
+	jsonRequest, err := json.Marshal(request)
+	if err != nil {
+		return ResolveResponse{}, fmt.Errorf("error when serializing request to the resolver service: %w", err)
+	}
+
+	payload := bytes.NewBuffer(jsonRequest)
+	req, err := http.NewRequestWithContext(ctx,
+		http.MethodPost, fmt.Sprintf("%s/v1/flags:resolve", client.Config.APIResolveBaseUrl), payload)
+	if err != nil {
+		return ResolveResponse{}, err
+	}
+
+	client.addTelemetryHeader(req)
 
 	startTime := time.Now()
 	resp, err := client.Client.Do(req)
@@ -92,37 +120,13 @@ func (client *HttpResolveClient) SendResolveRequest(ctx context.Context,
 		if err, ok := err.(interface{ Timeout() bool }); ok && err.Timeout() {
 			status = ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_TIMEOUT
 		}
-		select {
-		case client.traces <- &ProtoLibraryTraces_ProtoTrace{
-			Id: ProtoLibraryTraces_PROTO_TRACE_ID_RESOLVE_LATENCY,
-			Trace: &ProtoLibraryTraces_ProtoTrace_RequestTrace{
-				RequestTrace: &ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace{
-					MillisecondDuration: uint64(time.Since(startTime).Milliseconds()),
-					Status:              status,
-				},
-			},
-		}:
-		default:
-			// Channel is full, drop the trace
-		}
+		client.sendTrace(startTime, status)
 		return ResolveResponse{}, fmt.Errorf("error when calling the resolver service: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		select {
-		case client.traces <- &ProtoLibraryTraces_ProtoTrace{
-			Id: ProtoLibraryTraces_PROTO_TRACE_ID_RESOLVE_LATENCY,
-			Trace: &ProtoLibraryTraces_ProtoTrace_RequestTrace{
-				RequestTrace: &ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace{
-					MillisecondDuration: uint64(time.Since(startTime).Milliseconds()),
-					Status:              ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_ERROR,
-				},
-			},
-		}:
-		default:
-			// Channel is full, drop the trace
-		}
+		client.sendTrace(startTime, ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_ERROR)
 		return ResolveResponse{},
 			fmt.Errorf("got '%s' error from the resolver service: %s", resp.Status, parseErrorMessage(resp.Body))
 	}
@@ -132,35 +136,10 @@ func (client *HttpResolveClient) SendResolveRequest(ctx context.Context,
 	decoder.UseNumber()
 	err = decoder.Decode(&result)
 	if err != nil {
-		select {
-		case client.traces <- &ProtoLibraryTraces_ProtoTrace{
-			Id: ProtoLibraryTraces_PROTO_TRACE_ID_RESOLVE_LATENCY,
-			Trace: &ProtoLibraryTraces_ProtoTrace_RequestTrace{
-				RequestTrace: &ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace{
-					MillisecondDuration: uint64(time.Since(startTime).Milliseconds()),
-					Status:              ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_ERROR,
-				},
-			},
-		}:
-		default:
-			// Channel is full, drop the trace
-		}
+		client.sendTrace(startTime, ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_ERROR)
 		return ResolveResponse{}, fmt.Errorf("error when deserializing response from the resolver service: %w", err)
 	}
 
-	select {
-	case client.traces <- &ProtoLibraryTraces_ProtoTrace{
-		Id: ProtoLibraryTraces_PROTO_TRACE_ID_RESOLVE_LATENCY,
-		Trace: &ProtoLibraryTraces_ProtoTrace_RequestTrace{
-			RequestTrace: &ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace{
-				MillisecondDuration: uint64(time.Since(startTime).Milliseconds()),
-				Status:              ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_SUCCESS,
-			},
-		},
-	}:
-	default:
-		// Channel is full, drop the trace
-	}
-
+	client.sendTrace(startTime, ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_SUCCESS)
 	return result, nil
 }

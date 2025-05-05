@@ -16,7 +16,9 @@ import (
 func TestHttpResolveClient_TelemetryHeader(t *testing.T) {
 	var receivedHeaders []string
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		receivedHeaders = append(receivedHeaders, r.Header.Get("X-CONFIDENCE-TELEMETRY"))
+		if header := r.Header.Get("X-CONFIDENCE-TELEMETRY"); header != "" {
+			receivedHeaders = append(receivedHeaders, header)
+		}
 		time.Sleep(10 * time.Millisecond)
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(ResolveResponse{})
@@ -74,7 +76,9 @@ func TestHttpResolveClient_TelemetryHeader(t *testing.T) {
 func TestHttpResolveClient_TelemetryHeader_LatenciesAreCleared(t *testing.T) {
 	var receivedHeaders []string
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		receivedHeaders = append(receivedHeaders, r.Header.Get("X-CONFIDENCE-TELEMETRY"))
+		if header := r.Header.Get("X-CONFIDENCE-TELEMETRY"); header != "" {
+			receivedHeaders = append(receivedHeaders, header)
+		}
 		time.Sleep(10 * time.Millisecond)
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(ResolveResponse{})
@@ -119,7 +123,9 @@ func TestHttpResolveClient_TelemetryHeader_LatenciesAreCleared(t *testing.T) {
 func TestHttpResolveClient_TelemetryHeader_ErrorStatus(t *testing.T) {
 	var receivedHeaders []string
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		receivedHeaders = append(receivedHeaders, r.Header.Get("X-CONFIDENCE-TELEMETRY"))
+		if header := r.Header.Get("X-CONFIDENCE-TELEMETRY"); header != "" {
+			receivedHeaders = append(receivedHeaders, header)
+		}
 		time.Sleep(10 * time.Millisecond)
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(ResolveResponse{})
@@ -214,7 +220,9 @@ func TestHttpResolveClient_TelemetryHeader_MixedStatuses(t *testing.T) {
 	var receivedHeaders []string
 	successCount := 0
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		receivedHeaders = append(receivedHeaders, r.Header.Get("X-CONFIDENCE-TELEMETRY"))
+		if header := r.Header.Get("X-CONFIDENCE-TELEMETRY"); header != "" {
+			receivedHeaders = append(receivedHeaders, header)
+		}
 		time.Sleep(10 * time.Millisecond)
 
 		if successCount%2 == 0 {
@@ -322,4 +330,42 @@ func TestHttpResolveClient_TelemetryHeader_TimeoutError(t *testing.T) {
 	assert.NotNil(t, traces[0].GetRequestTrace())
 	assert.Equal(t, ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_TIMEOUT, traces[0].GetRequestTrace().Status)
 	assert.GreaterOrEqual(t, traces[0].GetRequestTrace().MillisecondDuration, uint64(1))
+}
+
+func TestHttpResolveClient_TelemetryHeader_Disabled(t *testing.T) {
+	var receivedHeaders []string
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if header := r.Header.Get("X-CONFIDENCE-TELEMETRY"); header != "" {
+			receivedHeaders = append(receivedHeaders, header)
+		}
+		time.Sleep(10 * time.Millisecond)
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(ResolveResponse{})
+	}))
+	defer server.Close()
+
+	config := APIConfig{
+		APIKey:            "test-key",
+		APIResolveBaseUrl: server.URL,
+		ResolveTimeout:    10 * time.Second,
+		DisableTelemetry:  true,
+	}
+	client := NewHttpResolveClient(config)
+
+	request := ResolveRequest{
+		ClientSecret:      "test-secret",
+		EvaluationContext: map[string]interface{}{"targeting_key": "user1"},
+		Flags:             []string{"test-flag"},
+		Sdk:               sdk{SDK_ID, SDK_VERSION},
+	}
+
+	_, err := client.SendResolveRequest(context.Background(), request)
+	assert.NoError(t, err)
+
+	// Verify no telemetry header was sent
+	assert.Equal(t, 0, len(receivedHeaders))
+
+	// Verify no traces were collected
+	traces := client.GetTracesAndClear()
+	assert.Equal(t, 0, len(traces))
 }
