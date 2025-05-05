@@ -288,3 +288,38 @@ func TestHttpResolveClient_TelemetryHeader_DeserializationError(t *testing.T) {
 	assert.Equal(t, 1, len(traces))
 	assert.Equal(t, ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_ERROR, traces[0].GetRequestTrace().Status)
 }
+
+func TestHttpResolveClient_TelemetryHeader_TimeoutError(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Simulate a timeout by sleeping longer than the client's timeout
+		time.Sleep(100 * time.Millisecond)
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(ResolveResponse{})
+	}))
+	defer server.Close()
+
+	config := APIConfig{
+		APIKey:            "test-key",
+		APIResolveBaseUrl: server.URL,
+		ResolveTimeout:    1 * time.Millisecond, // Set a very short timeout to force timeout
+	}
+	client := NewHttpResolveClient(config)
+
+	request := ResolveRequest{
+		ClientSecret:      "test-secret",
+		EvaluationContext: map[string]interface{}{"targeting_key": "user1"},
+		Flags:             []string{"test-flag"},
+		Sdk:               sdk{SDK_ID, SDK_VERSION},
+	}
+
+	_, err := client.SendResolveRequest(context.Background(), request)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "Client.Timeout exceeded while awaiting headers")
+
+	traces := client.GetTracesAndClear()
+	assert.Equal(t, 1, len(traces))
+	assert.Equal(t, ProtoLibraryTraces_PROTO_TRACE_ID_RESOLVE_LATENCY, traces[0].Id)
+	assert.NotNil(t, traces[0].GetRequestTrace())
+	assert.Equal(t, ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_TIMEOUT, traces[0].GetRequestTrace().Status)
+	assert.GreaterOrEqual(t, traces[0].GetRequestTrace().MillisecondDuration, uint64(1))
+}

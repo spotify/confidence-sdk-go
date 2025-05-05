@@ -88,13 +88,17 @@ func (client *HttpResolveClient) SendResolveRequest(ctx context.Context,
 	startTime := time.Now()
 	resp, err := client.Client.Do(req)
 	if err != nil {
+		status := ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_ERROR
+		if err, ok := err.(interface{ Timeout() bool }); ok && err.Timeout() {
+			status = ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_TIMEOUT
+		}
 		select {
 		case client.traces <- &ProtoLibraryTraces_ProtoTrace{
 			Id: ProtoLibraryTraces_PROTO_TRACE_ID_RESOLVE_LATENCY,
 			Trace: &ProtoLibraryTraces_ProtoTrace_RequestTrace{
 				RequestTrace: &ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace{
 					MillisecondDuration: uint64(time.Since(startTime).Milliseconds()),
-					Status:              ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_ERROR,
+					Status:              status,
 				},
 			},
 		}:
