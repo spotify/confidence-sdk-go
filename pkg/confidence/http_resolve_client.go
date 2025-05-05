@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"sync"
 	"time"
 
 	"google.golang.org/protobuf/proto"
@@ -17,8 +16,7 @@ import (
 type HttpResolveClient struct {
 	Client *http.Client
 	Config APIConfig
-	traces []*ProtoLibraryTraces_ProtoTrace
-	mu     sync.Mutex
+	traces chan *ProtoLibraryTraces_ProtoTrace
 }
 
 func NewHttpResolveClient(config APIConfig) *HttpResolveClient {
@@ -27,18 +25,20 @@ func NewHttpResolveClient(config APIConfig) *HttpResolveClient {
 			Timeout: config.ResolveTimeout,
 		},
 		Config: config,
-		traces: make([]*ProtoLibraryTraces_ProtoTrace, 0),
+		traces: make(chan *ProtoLibraryTraces_ProtoTrace, 1000), // Buffer size of 1000 should be sufficient
 	}
 }
 
 func (client *HttpResolveClient) GetTracesAndClear() []*ProtoLibraryTraces_ProtoTrace {
-	client.mu.Lock()
-	defer client.mu.Unlock()
-	traces := make([]*ProtoLibraryTraces_ProtoTrace, len(client.traces))
-	copy(traces, client.traces)
-	// Traces are cleared to avoid sending cumulative data
-	client.traces = client.traces[:0]
-	return traces
+	traces := make([]*ProtoLibraryTraces_ProtoTrace, 0)
+	for {
+		select {
+		case trace := <-client.traces:
+			traces = append(traces, trace)
+		default:
+			return traces
+		}
+	}
 }
 
 func parseErrorMessage(body io.ReadCloser) string {
@@ -88,8 +88,8 @@ func (client *HttpResolveClient) SendResolveRequest(ctx context.Context,
 	startTime := time.Now()
 	resp, err := client.Client.Do(req)
 	if err != nil {
-		client.mu.Lock()
-		client.traces = append(client.traces, &ProtoLibraryTraces_ProtoTrace{
+		select {
+		case client.traces <- &ProtoLibraryTraces_ProtoTrace{
 			Id: ProtoLibraryTraces_PROTO_TRACE_ID_RESOLVE_LATENCY,
 			Trace: &ProtoLibraryTraces_ProtoTrace_RequestTrace{
 				RequestTrace: &ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace{
@@ -97,15 +97,17 @@ func (client *HttpResolveClient) SendResolveRequest(ctx context.Context,
 					Status:              ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_ERROR,
 				},
 			},
-		})
-		client.mu.Unlock()
+		}:
+		default:
+			// Channel is full, drop the trace
+		}
 		return ResolveResponse{}, fmt.Errorf("error when calling the resolver service: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		client.mu.Lock()
-		client.traces = append(client.traces, &ProtoLibraryTraces_ProtoTrace{
+		select {
+		case client.traces <- &ProtoLibraryTraces_ProtoTrace{
 			Id: ProtoLibraryTraces_PROTO_TRACE_ID_RESOLVE_LATENCY,
 			Trace: &ProtoLibraryTraces_ProtoTrace_RequestTrace{
 				RequestTrace: &ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace{
@@ -113,8 +115,10 @@ func (client *HttpResolveClient) SendResolveRequest(ctx context.Context,
 					Status:              ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_ERROR,
 				},
 			},
-		})
-		client.mu.Unlock()
+		}:
+		default:
+			// Channel is full, drop the trace
+		}
 		return ResolveResponse{},
 			fmt.Errorf("got '%s' error from the resolver service: %s", resp.Status, parseErrorMessage(resp.Body))
 	}
@@ -124,8 +128,8 @@ func (client *HttpResolveClient) SendResolveRequest(ctx context.Context,
 	decoder.UseNumber()
 	err = decoder.Decode(&result)
 	if err != nil {
-		client.mu.Lock()
-		client.traces = append(client.traces, &ProtoLibraryTraces_ProtoTrace{
+		select {
+		case client.traces <- &ProtoLibraryTraces_ProtoTrace{
 			Id: ProtoLibraryTraces_PROTO_TRACE_ID_RESOLVE_LATENCY,
 			Trace: &ProtoLibraryTraces_ProtoTrace_RequestTrace{
 				RequestTrace: &ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace{
@@ -133,13 +137,15 @@ func (client *HttpResolveClient) SendResolveRequest(ctx context.Context,
 					Status:              ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_ERROR,
 				},
 			},
-		})
-		client.mu.Unlock()
+		}:
+		default:
+			// Channel is full, drop the trace
+		}
 		return ResolveResponse{}, fmt.Errorf("error when deserializing response from the resolver service: %w", err)
 	}
 
-	client.mu.Lock()
-	client.traces = append(client.traces, &ProtoLibraryTraces_ProtoTrace{
+	select {
+	case client.traces <- &ProtoLibraryTraces_ProtoTrace{
 		Id: ProtoLibraryTraces_PROTO_TRACE_ID_RESOLVE_LATENCY,
 		Trace: &ProtoLibraryTraces_ProtoTrace_RequestTrace{
 			RequestTrace: &ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace{
@@ -147,8 +153,10 @@ func (client *HttpResolveClient) SendResolveRequest(ctx context.Context,
 				Status:              ProtoLibraryTraces_ProtoTrace_ProtoRequestTrace_PROTO_STATUS_SUCCESS,
 			},
 		},
-	})
-	client.mu.Unlock()
+	}:
+	default:
+		// Channel is full, drop the trace
+	}
 
 	return result, nil
 }
