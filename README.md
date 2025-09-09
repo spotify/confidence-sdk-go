@@ -11,10 +11,10 @@ Get started by adding the dependencies:
 <!---x-release-please-start-version-->
 ```
 require (
-	github.com/open-feature/go-sdk v1.7.0
+	github.com/open-feature/go-sdk v0.4.6
 )
 require (
-	github.com/spotify/confidence-sdk-go v0.4.5
+	github.com/spotify/confidence-sdk-go v0.4.6
 )
 ```
 <!---x-release-please-end-->
@@ -85,7 +85,7 @@ confidenceSdk := c.NewConfidenceBuilder().SetAPIConfig(*config).Build()
 <!---x-release-please-start-version-->
 ```
 require (
-	github.com/spotify/confidence-sdk-go v0.4.5
+	github.com/spotify/confidence-sdk-go v0.4.6
 )
 ```
 <!---x-release-please-end-->
