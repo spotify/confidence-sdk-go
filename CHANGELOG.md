@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.6](https://github.com/spotify/confidence-sdk-go/compare/v0.4.5...v0.4.6) (2025-09-09)
+
+
+### 📚 Documentation
+
+* restructure to focus on Openfeature ([#81](https://github.com/spotify/confidence-sdk-go/issues/81)) ([df0dc3b](https://github.com/spotify/confidence-sdk-go/commit/df0dc3b6de9dbfd4b366efec4116d6ef6b627853))
+
 ## [0.4.5](https://github.com/spotify/confidence-sdk-go/compare/v0.4.4...v0.4.5) (2025-05-05)
 
 
