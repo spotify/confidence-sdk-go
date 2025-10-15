@@ -8,11 +8,13 @@ This repo contains the [Confidence](https://confidence.spotify.com/) Go SDK and 
 Before starting to use the provider, it can be helpful to read through the general [OpenFeature docs](https://docs.openfeature.dev/) and get familiar with the concepts. 
 
 Get started by adding the dependencies:
-<!---x-release-please-start-version-->
 ```
 require (
 	github.com/open-feature/go-sdk v1.7.0
 )
+```
+<!---x-release-please-start-version-->
+```
 require (
 	github.com/spotify/confidence-sdk-go v0.4.5
 )
