@@ -8,7 +8,8 @@
         "bump-patch-for-minor-pre-major": true,
         "extra-files": [
           "README.md",
-          "pkg/provider/provider.go"
+          "pkg/provider/provider.go",
+          "pkg/confidence/confidence.go"
         ],
         "changelog-sections": [
           {
