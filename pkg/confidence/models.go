@@ -87,6 +87,11 @@ func NewAPIConfigWithUrl(apiKey, APIResolveBaseUrl string) *APIConfig {
 	}
 }
 
+func (c *APIConfig) WithResolveTimeout(timeout time.Duration) *APIConfig {
+	c.ResolveTimeout = timeout
+	return c
+}
+
 func (c APIConfig) Validate() error {
 	if c.APIKey == "" {
 		return errors.New("api key needs to be set")
