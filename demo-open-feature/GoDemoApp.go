@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/open-feature/go-sdk/openfeature"
@@ -14,7 +15,8 @@ func main() {
 	clientKey := "CLIENT_KEY"
 	fmt.Println("Fetching the flags...")
 
-	confidence := c.NewConfidenceBuilder().SetAPIConfig(c.APIConfig{APIKey: clientKey}).Build()
+	config := c.NewAPIConfig(clientKey).WithResolveTimeout(200 * time.Millisecond)
+	confidence := c.NewConfidenceBuilder().SetAPIConfig(*config).Build()
 
 	confidence.PutContext("visitor_id", "anonym_user_1")
 
