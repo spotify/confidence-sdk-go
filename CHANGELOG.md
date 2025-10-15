@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.4.6](https://github.com/spotify/confidence-sdk-go/compare/v0.4.5...v0.4.6) (2025-10-15)
+
+
+### ✨ New Features
+
+* add configurable resolve timeout ([#84](https://github.com/spotify/confidence-sdk-go/issues/84)) ([2d2bccb](https://github.com/spotify/confidence-sdk-go/commit/2d2bccb733f3c6692cc3dbbc28f7c23a9345acd5))
+
+
+### 🧹 Chore
+
+* fix release please version ([#83](https://github.com/spotify/confidence-sdk-go/issues/83)) ([73b3fb9](https://github.com/spotify/confidence-sdk-go/commit/73b3fb9984a655ede973a2a3c8feedc1fb336d94))
+* release please should not update openfeature version ([#85](https://github.com/spotify/confidence-sdk-go/issues/85)) ([c8d9159](https://github.com/spotify/confidence-sdk-go/commit/c8d9159559c0442c187ce0d7e018830af6f40acc))
+
+
+### 📚 Documentation
+
+* restructure to focus on Openfeature ([#81](https://github.com/spotify/confidence-sdk-go/issues/81)) ([df0dc3b](https://github.com/spotify/confidence-sdk-go/commit/df0dc3b6de9dbfd4b366efec4116d6ef6b627853))
+
 ## [0.4.5](https://github.com/spotify/confidence-sdk-go/compare/v0.4.4...v0.4.5) (2025-05-05)
 
 
