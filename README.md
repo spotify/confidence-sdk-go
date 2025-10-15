@@ -69,7 +69,23 @@ h := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: programLevel})
 slog.SetDefault(slog.New(h))
 ``` 
 
-### Telemetry
+### Configuration
+
+#### Resolve Timeout
+
+By default, the SDK uses a 10-second timeout for resolve requests. You can configure a custom timeout using the `WithResolveTimeout()` method:
+
+```go
+// More aggressive timeout for latency-sensitive applications
+config := c.NewAPIConfig("clientSecret").WithResolveTimeout(100 * time.Millisecond)
+confidenceSdk := c.NewConfidenceBuilder().SetAPIConfig(*config).Build()
+
+// Or set a longer timeout if needed
+config := c.NewAPIConfig("clientSecret").WithResolveTimeout(30 * time.Second)
+confidenceSdk := c.NewConfidenceBuilder().SetAPIConfig(*config).Build()
+```
+
+#### Telemetry
 
 The SDK includes telemetry functionality that helps monitor SDK performance and usage. By default, telemetry is enabled and collects metrics (anonymously) such as resolve latency and request status. This data is used by the Confidence team, and in certain cases it is also exposed to the SDK adopters. You can disable telemetry by setting `DisableTelemetry: true` in the `APIConfig`:
 
