@@ -22,7 +22,7 @@ type ContextProvider interface {
 
 var (
 	SDK_ID      = "SDK_ID_GO_CONFIDENCE"
-	SDK_VERSION = "0.1.8" // x-release-please-version
+	SDK_VERSION = "0.4.5" // x-release-please-version
 )
 
 type Confidence struct {
