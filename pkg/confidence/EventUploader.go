@@ -46,8 +46,8 @@ func (e HttpEventUploader) upload(ctx context.Context, request EventBatchRequest
 		e.Logger.Warn("Failed to perform upload request", "error", err)
 		return
 	}
+	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		e.Logger.Warn("Failed to upload event", "status", resp.Status)
 	}
-	defer resp.Body.Close()
 }
