@@ -1,5 +1,7 @@
 # Confidence Go SDK
 
+> **:bulb: Looking for better performance?** Check out the [Confidence Local Resolver Provider for Go](https://github.com/spotify/confidence-resolver/tree/main/openfeature-provider/go), which evaluates flags locally via WebAssembly for increased resilience and lower latency.
+
 This repo contains the [Confidence](https://confidence.spotify.com/) Go SDK and the Confidence OpenFeature provider. We recommend using the [OpenFeature Go SDK](https://github.com/open-feature/go-sdk) to access Confidence feature flags.
 
 
@@ -20,6 +22,9 @@ require (
 )
 ```
 <!---x-release-please-end-->
+
+> [!TIP]
+> For better resilience and lower latency, see the [Confidence Local Resolver Provider](https://github.com/spotify/confidence-resolver/tree/main/openfeature-provider/go) which resolves flags locally without per-evaluation network calls.
 
 ### Creating and using the flag provider
 
