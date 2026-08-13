@@ -8,8 +8,6 @@ import (
 	"reflect"
 	"testing"
 
-	"golang.org/x/exp/slog"
-
 	"github.com/stretchr/testify/assert"
 )
 
@@ -303,7 +301,7 @@ func TestResolveWithNonExistingFlag(t *testing.T) {
 }
 
 func client(t *testing.T, response ResolveResponse, errorToReturn error) *Confidence {
-	confidence := newConfidence("apiKey", MockResolveClient{MockedResponse: response, MockedError: errorToReturn, TestingT: t})
+	confidence := newConfidence(t, "apiKey", MockResolveClient{MockedResponse: response, MockedError: errorToReturn, TestingT: t})
 	return confidence
 }
 
@@ -440,7 +438,7 @@ func emptyResponse() ResolveResponse {
 	return result
 }
 
-func newConfidence(apiKey string, client ResolveClient) *Confidence {
+func newConfidence(tb testing.TB, apiKey string, client ResolveClient) *Confidence {
 	config := APIConfig{
 		APIKey: apiKey,
 	}
@@ -448,6 +446,6 @@ func newConfidence(apiKey string, client ResolveClient) *Confidence {
 		Config:        config,
 		ResolveClient: client,
 		contextMap:    make(map[string]interface{}),
-		Logger:        slog.Default(),
+		Logger:        newLoggerForTest(tb),
 	}
 }

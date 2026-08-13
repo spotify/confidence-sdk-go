@@ -3,10 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"os"
 	"time"
-
-	"golang.org/x/exp/slog"
 
 	c "github.com/spotify/confidence-sdk-go/pkg/confidence"
 )
@@ -17,7 +16,7 @@ func main() {
 	var programLevel = new(slog.LevelVar)
 	programLevel.Set(slog.LevelDebug)
 	h := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: programLevel})
-	slog.SetDefault(slog.New(h))
+	logger := slog.New(h)
 
 	// Read the client secret from env
 	clientkey := os.Getenv("CONFIDENCE_GO_CLIENT")
@@ -26,7 +25,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	confidence := c.NewConfidenceBuilder().SetAPIConfig(*c.NewAPIConfig(clientkey)).Build().WithContext(map[string]interface{}{
+	confidence := c.NewConfidenceBuilder().SetLogger(logger).SetAPIConfig(*c.NewAPIConfig(clientkey)).Build().WithContext(map[string]interface{}{
 		"visitor_id": "test",
 	})
 	colorValue := confidence.GetStringFlag(context.Background(), "hawkflag.color", "defaultValue")

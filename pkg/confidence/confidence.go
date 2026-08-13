@@ -7,8 +7,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-
-	"golang.org/x/exp/slog"
 )
 
 type FlagResolver interface {
@@ -31,7 +29,7 @@ type Confidence struct {
 	contextMap    map[string]interface{}
 	Config        APIConfig
 	ResolveClient ResolveClient
-	Logger        *slog.Logger
+	Logger        Logger
 }
 
 func (e Confidence) GetContext() map[string]interface{} {
@@ -57,7 +55,7 @@ type ConfidenceBuilder struct {
 	confidence Confidence
 }
 
-func (e ConfidenceBuilder) SetLogger(logger *slog.Logger) ConfidenceBuilder {
+func (e ConfidenceBuilder) SetLogger(logger Logger) ConfidenceBuilder {
 	e.confidence.Logger = logger
 	return e
 }
@@ -76,9 +74,6 @@ func (e ConfidenceBuilder) SetResolveClient(client ResolveClient) ConfidenceBuil
 }
 
 func (e ConfidenceBuilder) Build() Confidence {
-	if e.confidence.Logger == nil {
-		e.confidence.Logger = slog.Default()
-	}
 	if e.confidence.ResolveClient == nil {
 		e.confidence.ResolveClient = NewHttpResolveClient(e.confidence.Config)
 	}
@@ -93,7 +88,9 @@ func (e ConfidenceBuilder) Build() Confidence {
 
 func NewConfidenceBuilder() ConfidenceBuilder {
 	return ConfidenceBuilder{
-		confidence: Confidence{},
+		confidence: Confidence{
+			Logger: &noopLogger{},
+		},
 	}
 }
 
@@ -210,13 +207,13 @@ func (e Confidence) ResolveFlag(ctx context.Context, flag string, defaultValue i
 			Sdk: sdk{Id: SDK_ID, Version: SDK_VERSION}})
 
 	if err != nil {
-		slog.Warn("Error in resolving flag", "flag", flag, "error", err)
+		e.Logger.Warn("Error in resolving flag", "flag", flag, "error", err)
 		return processResolveError(err, defaultValue)
 	}
 	logResolveTesterHint(e.Logger, flagName, e.Config.APIKey, e.contextMap)
 
 	if len(resp.ResolvedFlags) == 0 {
-		slog.Debug("Flag not found", "flag", flag)
+		e.Logger.Debug("Flag not found", "flag", flag)
 		return InterfaceResolutionDetail{
 			Value: defaultValue,
 			ResolutionDetail: ResolutionDetail{
@@ -231,7 +228,7 @@ func (e Confidence) ResolveFlag(ctx context.Context, flag string, defaultValue i
 
 	resolvedFlag := resp.ResolvedFlags[0]
 	if resolvedFlag.Flag != requestFlagName {
-		slog.Warn("Unexpected flag from remote", "flag", resolvedFlag.Flag)
+		e.Logger.Warn("Unexpected flag from remote", "flag", resolvedFlag.Flag)
 		return InterfaceResolutionDetail{
 			Value: defaultValue,
 			ResolutionDetail: ResolutionDetail{

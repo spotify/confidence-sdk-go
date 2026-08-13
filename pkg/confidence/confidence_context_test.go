@@ -5,8 +5,6 @@ import (
 	"reflect"
 	"testing"
 
-	"golang.org/x/exp/slog"
-
 	"github.com/stretchr/testify/assert"
 )
 
@@ -104,7 +102,7 @@ func create_confidence(t *testing.T, response ResolveResponse) *Confidence {
 		Config:        config,
 		ResolveClient: MockResolveClient{MockedResponse: response, MockedError: nil, TestingT: t},
 		contextMap:    make(map[string]interface{}),
-		Logger:        slog.Default(),
+		Logger:        newLoggerForTest(t),
 	}
 }
 
@@ -117,6 +115,6 @@ func createConfidenceWithUploader(t *testing.T, response ResolveResponse, upload
 		EventUploader: uploader,
 		ResolveClient: MockResolveClient{MockedResponse: response, MockedError: nil, TestingT: t},
 		contextMap:    make(map[string]interface{}),
-		Logger:        slog.Default(),
+		Logger:        newLoggerForTest(t),
 	}
 }

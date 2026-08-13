@@ -66,15 +66,33 @@ boolValue, error := client.BooleanValue(context.Background(), "test-flag.boolean
 
 ### Logging
 
-Unless specifically configured using the `ConfidenceBuilder` `setLogger()` function; Confidence uses the default instance of [slog](https://pkg.go.dev/log/slog) for logging valuable information during runtime.
-When getting started with Confidence, we suggest you configure [slog](https://pkg.go.dev/log/slog) to emit debug level information:
+By default, Confidence uses a no-op logger that silently discards all log messages.
+To enable logging, pass a logger via `SetLogger()` on the `ConfidenceBuilder`.
+
+`*slog.Logger` satisfies the `Logger` interface out of the box. When getting started with Confidence,
+we suggest configuring [slog](https://pkg.go.dev/log/slog) to emit debug level information and passing it to the builder:
+
 ```go
-// Set up the logger with the debug log level
 var programLevel = new(slog.LevelVar)
 programLevel.Set(slog.LevelDebug)
 h := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: programLevel})
-slog.SetDefault(slog.New(h))
-``` 
+logger := slog.New(h)
+
+confidenceSdk := c.NewConfidenceBuilder().
+    SetAPIConfig(*c.NewAPIConfig("clientSecret")).
+    SetLogger(logger).
+    Build()
+```
+
+You can also provide any custom logger that implements the `Logger` interface:
+
+```go
+type Logger interface {
+    Info(msg string, args ...any)
+    Warn(msg string, args ...any)
+    Debug(msg string, args ...any)
+}
+```
 
 ### Configuration
 

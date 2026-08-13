@@ -8,15 +8,13 @@ import (
 	"net"
 	"reflect"
 	"strings"
-
-	"golang.org/x/exp/slog"
 )
 
 const ErrorReason Reason = "ERROR"
 const TargetingMatchReason Reason = "TARGETING_MATCH"
 const DefaultReason Reason = "DEFAULT"
 
-func logResolveTesterHint(logger *slog.Logger, flagName, apiKey string, context map[string]interface{}) {
+func logResolveTesterHint(logger Logger, flagName, apiKey string, context map[string]interface{}) {
 	object := map[string]interface{}{
 		"flag":      "flags/" + flagName,
 		"clientKey": apiKey,
