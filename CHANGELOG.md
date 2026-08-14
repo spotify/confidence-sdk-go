@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.7](https://github.com/spotify/confidence-sdk-go/compare/v0.4.6...v0.4.7) (2026-01-28)
+
+
+### 📚 Documentation
+
+* add getting involved section to contribution guidelines ([#87](https://github.com/spotify/confidence-sdk-go/issues/87)) ([7697985](https://github.com/spotify/confidence-sdk-go/commit/76979859bdf3cdcad05f1f9d16831ca4e5daf966))
+
 ## [0.4.6](https://github.com/spotify/confidence-sdk-go/compare/v0.4.5...v0.4.6) (2025-10-15)
 
 

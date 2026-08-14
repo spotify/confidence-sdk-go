@@ -18,7 +18,7 @@ require (
 <!---x-release-please-start-version-->
 ```
 require (
-	github.com/spotify/confidence-sdk-go v0.4.6
+	github.com/spotify/confidence-sdk-go v0.4.7
 )
 ```
 <!---x-release-please-end-->
@@ -126,7 +126,7 @@ confidenceSdk := c.NewConfidenceBuilder().SetAPIConfig(*config).Build()
 <!---x-release-please-start-version-->
 ```
 require (
-	github.com/spotify/confidence-sdk-go v0.4.6
+	github.com/spotify/confidence-sdk-go v0.4.7
 )
 ```
 <!---x-release-please-end-->
