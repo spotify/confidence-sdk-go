@@ -145,6 +145,11 @@ You can also use only the flag name `test-flag` and retrieve all values as a map
 
 The flag's schema is validated against the requested data type, and if it doesn't match it will fall back to the default value. 
 
+> **Deprecated: list (array) flag values.** Using lists/arrays as flag schema types or flag values is deprecated.
+> This SDK has no list-specific flag API; any list values contained in a flag are still returned unchanged inside
+> object resolution results, and existing behavior is preserved. Prefer structs or primitive properties for new flags.
+> This deprecation applies only to flag values, not to evaluation context or event data.
+
 ```go
 import (
     c "github.com/spotify/confidence-sdk-go/pkg/confidence"
